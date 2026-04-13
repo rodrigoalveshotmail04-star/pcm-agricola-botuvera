@@ -1156,7 +1156,7 @@
     function mostrarApp() {
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('mainApp').style.display = 'block';
-      document.getElementById('navUsuarioAtual').textContent = `Olá, ${currentUser.nome}`;
+      const _navU = document.getElementById('navUsuarioAtual'); if (_navU) _navU.textContent = `Olá, ${currentUser.nome}`;
       
       // Mostrar tab de usuários apenas para admin
       const tabUsuarios = document.getElementById('tabUsuarios');
@@ -1199,7 +1199,8 @@
 
     function atualizarDataHoje() {
       const hoje = new Date().toLocaleDateString('pt-BR');
-      document.getElementById('navDataHoje').textContent = hoje;
+      const el = document.getElementById('navDataHoje');
+      if (el) el.textContent = hoje;
     }
 
     // ==================== EQUIPAMENTOS ====================
