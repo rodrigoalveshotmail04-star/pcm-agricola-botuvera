@@ -557,6 +557,130 @@
       border: 1px solid #FFDE00;
     }
 
+
+    /* ===== TELA INICIAL — MÓDULOS ===== */
+    #homeScreen {
+      display: none;
+      min-height: 100vh;
+      background: #f5f5f0;
+    }
+    .home-navbar {
+      background: #367C2B;
+      border-bottom: 4px solid #FFDE00;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .home-navbar .brand-home {
+      color: #FFFFFF;
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+    }
+    .home-navbar .subtitle-home {
+      color: rgba(255,255,255,0.8);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-left: 12px;
+      padding-left: 12px;
+      border-left: 1px solid rgba(255,255,255,0.4);
+    }
+    .home-welcome {
+      text-align: center;
+      padding: 48px 16px 24px;
+    }
+    .home-welcome h2 {
+      color: #1B4A0A;
+      font-weight: 800;
+      font-size: 1.8rem;
+      margin-bottom: 6px;
+    }
+    .home-welcome p {
+      color: #555;
+      font-size: 1rem;
+    }
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 24px 48px;
+    }
+    .module-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 2px solid #e8e8e8;
+      border-left: 6px solid #367C2B;
+      padding: 28px 24px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: block;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .module-card:hover {
+      border-left-color: #FFDE00;
+      box-shadow: 0 6px 20px rgba(54,124,43,0.15);
+      transform: translateY(-3px);
+    }
+    .module-card .mod-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #367C2B, #1B4A0A);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .module-card .mod-icon i {
+      font-size: 1.5rem;
+      color: #FFDE00;
+    }
+    .module-card .mod-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #1B4A0A;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .module-card .mod-desc {
+      font-size: 0.85rem;
+      color: #666;
+      line-height: 1.5;
+    }
+    .module-card .mod-badge {
+      display: inline-block;
+      background: #FFDE00;
+      color: #1A1A1A;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-top: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .module-card-coming {
+      opacity: 0.5;
+      cursor: default;
+      pointer-events: none;
+    }
+    .module-card-coming .mod-icon {
+      background: #ccc;
+    }
+    .module-card-coming .mod-badge {
+      background: #ddd;
+      color: #999;
+    }
+    @media (max-width: 600px) {
+      .modules-grid { grid-template-columns: 1fr; padding: 16px; }
+    }
+
   </style>
 </head>
 
@@ -580,7 +704,38 @@
       </form>
       <div id="loginError" class="login-error"></div>
     </div>
-  </div><!-- Main App (hidden until login) -->
+  </div>
+
+
+  <!-- ===== TELA INICIAL — MÓDULOS ===== -->
+  <div id="homeScreen" style="display:none;">
+    <div class="home-navbar">
+      <div class="d-flex align-items-center">
+        <span class="brand-home">BOTUVERÁ</span>
+        <span class="subtitle-home">PCM · FAZENDA VÓ JOVITA</span>
+      </div>
+      <button class="btn btn-outline-light btn-sm" onclick="fazerLogout()">
+        <i class="fas fa-sign-out-alt me-1"></i>Sair
+      </button>
+    </div>
+
+    <div class="home-welcome">
+      <h2><i class="fas fa-th-large me-2" style="color:#FFDE00;"></i>Módulos do Sistema</h2>
+      <p id="homeUsuarioNome">Selecione um módulo para começar</p>
+    </div>
+
+    <div class="modules-grid">
+      <div class="module-card" onclick="abrirModulo('manutencoes')">
+        <div class="mod-icon"><i class="fas fa-tools"></i></div>
+        <div class="mod-title">Manutenções Corretivas</div>
+        <div class="mod-desc">Controle de planos de manutenção, agendamentos, ocorrências e histórico de equipamentos agrícolas.</div>
+        <span class="mod-badge">Ativo</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Main App -->
   <div id="mainApp" style="display: none;">
     <!-- Navbar -->
     <nav class="navbar navbar-dark navbar-expand-lg">
@@ -596,6 +751,9 @@
           </button>
           <button class="btn btn-warning btn-sm fw-bold" onclick="exportExcel()">
             <i class="fas fa-file-export me-1"></i>Exportar Excel
+          </button>
+          <button class="btn btn-outline-light btn-sm" onclick="voltarHome()">
+            <i class="fas fa-home me-1"></i>Início
           </button>
           <button class="btn btn-outline-light btn-sm" onclick="fazerLogout()">
             <i class="fas fa-sign-out-alt me-1"></i>Sair
@@ -738,7 +896,10 @@
         <div class="modal-body">
           <input type="hidden" id="equipId" />
           
-          <label class="form-label">Nome *</label>
+          <label class="form-label">Código do Bem</label>
+          <input type="text" class="form-control" id="equipCodigo" placeholder="Código do sistema externo" />
+
+          <label class="form-label mt-2">Nome *</label>
           <input type="text" class="form-control" id="equipNome" required />
           
           <label class="form-label">Setor *</label>
@@ -761,6 +922,10 @@
             <option value="Plataforma de Corte">Plataforma de Corte</option>
             <option value="Pulverizador">Pulverizador</option>
             <option value="Implementos">Implementos</option>
+            <option value="PA Carregadeira">PA Carregadeira</option>
+            <option value="Caminhão">Caminhão</option>
+            <option value="Camionete">Camionete</option>
+            <option value="Moto">Moto</option>
           </select>
           
           <label class="form-label">Placa</label>
@@ -838,19 +1003,25 @@
           <label class="form-label">Descrição</label>
           <textarea class="form-control" id="planoDescricao" placeholder="Descrição da manutenção"></textarea>
           
-          <label class="form-label">Produto / Quantidade Padrão</label>
-          <input type="text" class="form-control" id="planoQuantidadePadrao" placeholder="Ex: Óleo 15W40 — 10 LT" />
+          <label class="form-label">Produto (Descrição)</label>
+          <input type="text" class="form-control" id="planoProdutoDescricao" placeholder="Ex: Óleo Motor 15W40" />
+
+          <label class="form-label mt-2">Quantidade Padrão</label>
+          <input type="text" class="form-control" id="planoProdutoQuantidade" placeholder="Ex: 10 LT" />
           
           <label class="form-label">Última Troca - Data (Opcional)</label>
           <input type="date" class="form-control" id="planoUltimaTrocaData" />
           
-          <label class="form-label">Última Troca - Tipo</label>
+          <label class="form-label">Última Troca - Tipo de Intervalo</label>
           <select class="form-select" id="planoUltimaTrocaTipo">
             <option value="">Selecione...</option>
-            <option value="Data">Data</option>
+            <option value="Dias">Dias</option>
             <option value="KM">KM</option>
             <option value="Horas">Horas</option>
           </select>
+
+          <label class="form-label mt-2">Última Troca - Valor do Intervalo</label>
+          <input type="number" class="form-control" id="planoUltimaTrocaValor" placeholder="Ex: 250 (horas), 5000 (km), 90 (dias)" />
           
           <label class="form-label">Ativo</label>
           <div>
@@ -1103,6 +1274,20 @@
     }
 
     // ==================== AUTHENTICATION ====================
+
+    function abrirModulo(modulo) {
+      if (modulo === 'manutencoes') {
+        document.getElementById('homeScreen').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        mudarTab('dashboard');
+      }
+    }
+
+    function voltarHome() {
+      document.getElementById('mainApp').style.display = 'none';
+      document.getElementById('homeScreen').style.display = 'block';
+    }
+
     function fazerLogin(e) {
       e.preventDefault();
       const usuario = document.getElementById('loginUsuario').value;
@@ -1146,6 +1331,7 @@
         localStorage.removeItem('pcm_db');
         document.getElementById('loginScreen').classList.remove('hidden');
         document.getElementById('mainApp').style.display = 'none';
+        document.getElementById('homeScreen').style.display = 'none';
         document.getElementById('loginUsuario').value = '';
         document.getElementById('loginSenha').value = '';
         document.getElementById('loginError').textContent = '';
@@ -1210,6 +1396,7 @@
         return;
       }
       document.getElementById('equipId').value = '';
+      document.getElementById('equipCodigo').value = '';
       document.getElementById('equipNome').value = '';
       document.getElementById('equipSetor').value = '';
       document.getElementById('equipTipo').value = '';
@@ -1228,6 +1415,7 @@
       const id = document.getElementById('equipId').value || uid();
       const equip = {
         id,
+        codigo: document.getElementById('equipCodigo').value,
         nome: document.getElementById('equipNome').value,
         setor: document.getElementById('equipSetor').value,
         tipo: document.getElementById('equipTipo').value,
@@ -1262,6 +1450,7 @@
       if (!equip) return;
       
       document.getElementById('equipId').value = equip.id;
+      document.getElementById('equipCodigo').value = equip.codigo || '';
       document.getElementById('equipNome').value = equip.nome;
       document.getElementById('equipSetor').value = equip.setor || '';
       document.getElementById('equipTipo').value = equip.tipo;
@@ -1307,6 +1496,7 @@
           <div class="d-flex justify-content-between align-items-start">
             <div>
               <h5 class="card-title">${equip.nome}</h5>
+              ${equip.codigo ? `<div class="card-meta">Cód. Bem: <strong>${equip.codigo}</strong></div>` : ''}
               <div class="card-meta">Setor: <strong>${equip.setor || '-'}</strong></div>
               <div class="card-meta">Tipo: <strong>${equip.tipo}</strong></div>
               <div class="card-meta">Placa: <strong>${equip.placa || '-'}</strong></div>
@@ -1338,6 +1528,9 @@
       document.getElementById('planoIntervaloKm').value = '';
       document.getElementById('planoIntervaloHoras').value = '';
       document.getElementById('planoDescricao').value = '';
+      document.getElementById('planoProdutoDescricao').value = '';
+      document.getElementById('planoProdutoQuantidade').value = '';
+      document.getElementById('planoUltimaTrocaValor').value = '';
       document.getElementById('planoQuantidadePadrao').value = '';
       document.getElementById('planoUltimaTrocaData').value = '';
       document.getElementById('planoUltimaTrocaTipo').value = '';
@@ -1358,9 +1551,11 @@
         intervalo_km: document.getElementById('planoIntervaloKm').value || 0,
         intervalo_horas: document.getElementById('planoIntervaloHoras').value || 0,
         descricao: document.getElementById('planoDescricao').value,
-        quantidade_padrao: document.getElementById('planoQuantidadePadrao').value,
+        produto_descricao: document.getElementById('planoProdutoDescricao').value,
+        produto_quantidade: document.getElementById('planoProdutoQuantidade').value,
         ultima_troca_data: document.getElementById('planoUltimaTrocaData').value,
         ultima_troca_tipo: document.getElementById('planoUltimaTrocaTipo').value,
+        ultima_troca_valor: document.getElementById('planoUltimaTrocaValor').value || 0,
         ativo: document.getElementById('planoAtivo').checked
       };
       
@@ -1392,9 +1587,11 @@
       document.getElementById('planoIntervaloKm').value = plano.intervalo_km;
       document.getElementById('planoIntervaloHoras').value = plano.intervalo_horas;
       document.getElementById('planoDescricao').value = plano.descricao;
-      document.getElementById('planoQuantidadePadrao').value = plano.quantidade_padrao || '';
+      document.getElementById('planoProdutoDescricao').value = plano.produto_descricao || plano.quantidade_padrao || '';
+      document.getElementById('planoProdutoQuantidade').value = plano.produto_quantidade || '';
       document.getElementById('planoUltimaTrocaData').value = plano.ultima_troca_data || '';
       document.getElementById('planoUltimaTrocaTipo').value = plano.ultima_troca_tipo || '';
+      document.getElementById('planoUltimaTrocaValor').value = plano.ultima_troca_valor || '';
       document.getElementById('planoAtivo').checked = plano.ativo !== false;
       
       preencherSelectEquipamentos('planoEquipamento');
@@ -1442,8 +1639,9 @@
                 ${plano.intervalo_km && plano.intervalo_horas ? ' / ' : ''}
                 ${plano.intervalo_horas ? plano.intervalo_horas + ' horas' : ''}</strong>
               </div>
-              <div class="card-meta">Quantidade Padrão: <strong>${plano.quantidade_padrao || '-'}</strong></div>
-              <div class="card-meta">Última Troca: <strong>${plano.ultima_troca_data || '-'}</strong></div>
+              <div class="card-meta">Produto: <strong>${plano.produto_descricao || plano.quantidade_padrao || '-'}</strong></div>
+              <div class="card-meta">Quantidade: <strong>${plano.produto_quantidade || '-'}</strong></div>
+              <div class="card-meta">Última Troca: <strong>${plano.ultima_troca_data || '-'}${plano.ultima_troca_tipo ? ' (' + plano.ultima_troca_tipo + (plano.ultima_troca_valor ? ': ' + plano.ultima_troca_valor : '') + ')' : ''}</strong></div>
             </div>
             <div class="d-flex gap-2">
               ${canEdit ? `<button class="btn btn-sm btn-primary" onclick="editarPlano('${plano.id}')"><i class="fas fa-edit"></i></button>
