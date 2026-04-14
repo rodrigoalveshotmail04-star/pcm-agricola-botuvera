@@ -681,6 +681,123 @@
       .modules-grid { grid-template-columns: 1fr; padding: 16px; }
     }
 
+
+    /* ===== DASHBOARD GERENCIAL ===== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 500px) { .kpi-grid { grid-template-columns: 1fr; } }
+
+    .kpi-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px 16px;
+      border-left: 5px solid #ccc;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .kpi-card .kpi-value {
+      font-size: 2.2rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .kpi-card .kpi-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #777; font-weight: 600; }
+    .kpi-card .kpi-sub { font-size: 0.78rem; color: #999; }
+    .kpi-verde   { border-left-color: #367C2B; } .kpi-verde   .kpi-value { color: #367C2B; }
+    .kpi-amarelo { border-left-color: #FFDE00; } .kpi-amarelo .kpi-value { color: #b8a000; }
+    .kpi-vermelho{ border-left-color: #dc3545; } .kpi-vermelho .kpi-value { color: #dc3545; }
+    .kpi-laranja { border-left-color: #fd7e14; } .kpi-laranja .kpi-value { color: #fd7e14; }
+    .kpi-azul    { border-left-color: #0d6efd; } .kpi-azul    .kpi-value { color: #0d6efd; }
+
+    .dash-charts-row {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 800px) { .dash-charts-row { grid-template-columns: 1fr; } }
+
+    .dash-chart-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-top: 3px solid #367C2B;
+    }
+    .dash-chart-box.full { margin-bottom: 18px; }
+    .dash-chart-box h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #1B4A0A;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dash-chart-box h4 i { color: #FFDE00; background: #367C2B; padding: 4px 6px; border-radius: 5px; }
+
+    .dash-table-section {
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-top: 3px solid #367C2B;
+      margin-bottom: 24px;
+    }
+    .dash-table-section h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #1B4A0A;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dash-table-section h4 i { color: #FFDE00; background: #367C2B; padding: 4px 6px; border-radius: 5px; }
+
+    #tabelaManutencoes { font-size: 0.82rem; width: 100%; border-collapse: collapse; }
+    #tabelaManutencoes thead th {
+      background: #1B4A0A; color: #FFDE00;
+      padding: 8px 10px; text-align: left;
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    #tabelaManutencoes tbody tr:nth-child(even) { background: #f9f9f5; }
+    #tabelaManutencoes tbody td { padding: 8px 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
+    #tabelaManutencoes tbody tr:hover { background: #f0f7ed; }
+
+    .badge-vencida  { background:#dc3545; color:#fff; padding:3px 8px; border-radius:20px; font-size:0.7rem; font-weight:700; white-space:nowrap; }
+    .badge-proxima  { background:#fd7e14; color:#fff; padding:3px 8px; border-radius:20px; font-size:0.7rem; font-weight:700; white-space:nowrap; }
+    .badge-ok       { background:#367C2B; color:#fff; padding:3px 8px; border-radius:20px; font-size:0.7rem; font-weight:700; white-space:nowrap; }
+    .badge-sem-data { background:#6c757d; color:#fff; padding:3px 8px; border-radius:20px; font-size:0.7rem; font-weight:700; white-space:nowrap; }
+
+    .dash-filter-bar {
+      display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px;
+    }
+    .dash-filter-bar select, .dash-filter-bar input {
+      font-size: 0.8rem; padding: 5px 10px;
+      border: 1px solid #ddd; border-radius: 6px;
+    }
+    .dash-filter-bar label { font-size: 0.78rem; font-weight: 600; color: #555; }
+
+    .dash-title {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+    }
+    .dash-title h2 { color: #367C2B; border-left: 5px solid #FFDE00; padding-left: 12px; margin: 0; font-size: 1.3rem; }
+    .dash-title .dash-update { font-size: 0.75rem; color: #888; }
+
+    .chart-canvas-wrap { position: relative; height: 220px; }
+    .chart-canvas-wrap-lg { position: relative; height: 200px; }
+
   </style>
 </head>
 
@@ -788,29 +905,99 @@
         </button>
       </div>
 
-      <!-- DASHBOARD -->
+      <!-- DASHBOARD GERENCIAL -->
       <div id="dashboard" class="content active">
-        <h2 style="color: #367C2B; border-left: 5px solid #FFDE00; padding-left: 12px; margin-bottom: 20px;">Dashboard</h2>
-        <div class="dashboard-grid">
-          <div class="dashboard-card">
-            <h3>Total de Equipamentos</h3>
-            <div class="value" id="dashEquipamentos">0</div>
-            <div class="subtitle">ativos</div>
+        <div class="dash-title">
+          <h2>Dashboard — Gestão de Manutenção</h2>
+          <span class="dash-update"><i class="fas fa-sync-alt me-1"></i>Atualizado: <span id="dashHoraUpdate">--</span></span>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-azul">
+            <div class="kpi-label"><i class="fas fa-tractor me-1"></i>Equipamentos</div>
+            <div class="kpi-value" id="dashEquipamentos">0</div>
+            <div class="kpi-sub">ativos</div>
           </div>
-          <div class="dashboard-card">
-            <h3>Planos de Manutenção</h3>
-            <div class="value" id="dashPlanos">0</div>
-            <div class="subtitle">cadastrados</div>
+          <div class="kpi-card kpi-verde">
+            <div class="kpi-label"><i class="fas fa-check-circle me-1"></i>Em Dia</div>
+            <div class="kpi-value" id="dashEmDia">0</div>
+            <div class="kpi-sub">manutenções ok</div>
           </div>
-          <div class="dashboard-card">
-            <h3>Manutenções Pendentes</h3>
-            <div class="value" id="dashAgendadas">0</div>
-            <div class="subtitle">próximos 7 dias</div>
+          <div class="kpi-card kpi-amarelo">
+            <div class="kpi-label"><i class="fas fa-clock me-1"></i>Próximas</div>
+            <div class="kpi-value" id="dashProximas">0</div>
+            <div class="kpi-sub">vence em 7 dias / 500 km / 20h</div>
           </div>
-          <div class="dashboard-card">
-            <h3>Ocorrências Abertas</h3>
-            <div class="value" id="dashOcorrencias">0</div>
-            <div class="subtitle">em andamento</div>
+          <div class="kpi-card kpi-vermelho">
+            <div class="kpi-label"><i class="fas fa-exclamation-triangle me-1"></i>Vencidas</div>
+            <div class="kpi-value" id="dashVencidas">0</div>
+            <div class="kpi-sub">requerem atenção</div>
+          </div>
+          <div class="kpi-card kpi-laranja">
+            <div class="kpi-label"><i class="fas fa-bolt me-1"></i>Ocorrências</div>
+            <div class="kpi-value" id="dashOcorrencias">0</div>
+            <div class="kpi-sub">em andamento</div>
+          </div>
+        </div>
+
+        <!-- Gráficos: Pizza + Barras -->
+        <div class="dash-charts-row">
+          <div class="dash-chart-box">
+            <h4><i class="fas fa-chart-pie"></i>Status das Manutenções</h4>
+            <div class="chart-canvas-wrap">
+              <canvas id="chartPizza"></canvas>
+            </div>
+          </div>
+          <div class="dash-chart-box">
+            <h4><i class="fas fa-chart-bar"></i>Situação por Equipamento</h4>
+            <div class="chart-canvas-wrap">
+              <canvas id="chartBarras"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráfico Temporal -->
+        <div class="dash-chart-box full">
+          <h4><i class="fas fa-chart-line"></i>Evolução Temporal — Manutenções Concluídas vs Ocorrências (últimos 6 meses)</h4>
+          <div class="chart-canvas-wrap-lg">
+            <canvas id="chartTemporal"></canvas>
+          </div>
+        </div>
+
+        <!-- Tabela Consolidada -->
+        <div class="dash-table-section">
+          <h4><i class="fas fa-list-alt"></i>Situação Consolidada das Manutenções</h4>
+          <div class="dash-filter-bar">
+            <label>Filtrar:</label>
+            <select id="dashFiltroStatus" onchange="atualizarDashboard()">
+              <option value="todos">Todos os status</option>
+              <option value="vencida">Vencidas</option>
+              <option value="proxima">Próximas</option>
+              <option value="ok">Em dia</option>
+              <option value="sem-data">Sem data</option>
+            </select>
+            <select id="dashFiltroEquip" onchange="atualizarDashboard()">
+              <option value="todos">Todos os equipamentos</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto;">
+            <table id="tabelaManutencoes">
+              <thead>
+                <tr>
+                  <th>Equipamento</th>
+                  <th>Plano de Manutenção</th>
+                  <th>Tipo Intervalo</th>
+                  <th>Última Troca</th>
+                  <th>Próxima Previsão</th>
+                  <th>Restante</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaManutencoesBody">
+                <tr><td colspan="7" style="text-align:center;color:#999;padding:20px;">Sem dados</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1223,6 +1410,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
   <script>
@@ -1261,6 +1449,10 @@
     function salvarDb() {
       localStorage.setItem('pcm_db', JSON.stringify(db));
       salvarNoFirebase();
+      // Sincronização automática do Dashboard
+      if (typeof atualizarDashboard === 'function') {
+        setTimeout(atualizarDashboard, 50);
+      }
     }
 
     function salvarNoFirebase() {
@@ -1376,12 +1568,235 @@
       if (tab === 'usuarios') renderUsuarios();
     }
 
-    function atualizarDashboard() {
-      document.getElementById('dashEquipamentos').textContent = db.equipamentos.filter(e => e.status === 'Ativo').length;
-      document.getElementById('dashPlanos').textContent = db.planos.length;
-      document.getElementById('dashAgendadas').textContent = db.agendamentos.filter(a => a.status === 'Agendado').length;
-      document.getElementById('dashOcorrencias').textContent = db.ocorrencias.filter(o => o.status === 'Em andamento').length;
+
+    // ==================== LÓGICA DE STATUS DE MANUTENÇÃO ====================
+    function calcularStatusManutencao(plano, equip) {
+      const hoje = new Date(); hoje.setHours(0,0,0,0);
+      const ALERTA_DIAS = 7, ALERTA_KM = 500, ALERTA_HORAS = 20;
+      let status = 'sem-data', detalhe = 'Sem referência', proximaStr = '-';
+
+      const tipo = plano.tipo_intervalo;
+
+      if ((tipo === 'Data' || tipo === 'Dias') && plano.ultima_troca_data && plano.intervalo_dias > 0) {
+        const ultima = new Date(plano.ultima_troca_data + 'T00:00:00');
+        const proxima = new Date(ultima);
+        proxima.setDate(proxima.getDate() + parseInt(plano.intervalo_dias));
+        const diff = Math.ceil((proxima - hoje) / 86400000);
+        proximaStr = proxima.toLocaleDateString('pt-BR');
+        if (diff < 0)           { status = 'vencida';  detalhe = Math.abs(diff) + ' dias em atraso'; }
+        else if (diff <= ALERTA_DIAS) { status = 'proxima';  detalhe = diff + ' dias restantes'; }
+        else                    { status = 'ok';        detalhe = diff + ' dias restantes'; }
+
+      } else if (tipo === 'KM' && plano.intervalo_km > 0) {
+        const kmAtual = parseFloat(equip?.km) || 0;
+        const ultimaKm = parseFloat(plano.ultima_troca_valor) || 0;
+        const proximaKm = ultimaKm + parseFloat(plano.intervalo_km);
+        const diff = proximaKm - kmAtual;
+        proximaStr = proximaKm.toLocaleString('pt-BR') + ' KM';
+        if (diff < 0)              { status = 'vencida';  detalhe = Math.abs(diff).toFixed(0) + ' KM excedidos'; }
+        else if (diff <= ALERTA_KM){ status = 'proxima';  detalhe = diff.toFixed(0) + ' KM restantes'; }
+        else                       { status = 'ok';        detalhe = diff.toFixed(0) + ' KM restantes'; }
+
+      } else if (tipo === 'Horas' && plano.intervalo_horas > 0) {
+        const horasAtual = parseFloat(equip?.horas) || 0;
+        const ultimasH = parseFloat(plano.ultima_troca_valor) || 0;
+        const proximaH = ultimasH + parseFloat(plano.intervalo_horas);
+        const diff = proximaH - horasAtual;
+        proximaStr = proximaH.toLocaleString('pt-BR') + ' h';
+        if (diff < 0)               { status = 'vencida';  detalhe = Math.abs(diff).toFixed(0) + ' horas excedidas'; }
+        else if (diff <= ALERTA_HORAS){ status = 'proxima'; detalhe = diff.toFixed(0) + ' horas restantes'; }
+        else                         { status = 'ok';        detalhe = diff.toFixed(0) + ' horas restantes'; }
+      }
+
+      return { status, detalhe, proximaStr };
     }
+
+    // ==================== INSTÂNCIAS DE GRÁFICOS ====================
+    let _chartPizza = null, _chartBarras = null, _chartTemporal = null;
+
+    function destruirGraficos() {
+      if (_chartPizza)    { _chartPizza.destroy();    _chartPizza = null; }
+      if (_chartBarras)   { _chartBarras.destroy();   _chartBarras = null; }
+      if (_chartTemporal) { _chartTemporal.destroy(); _chartTemporal = null; }
+    }
+
+    function atualizarDashboard() {
+      // Hora de atualização
+      const now = new Date();
+      const el = document.getElementById('dashHoraUpdate');
+      if (el) el.textContent = now.toLocaleTimeString('pt-BR');
+
+      // ---- Calcular status de todos os planos ----
+      const statusPlanos = db.planos.filter(p => p.ativo !== false).map(p => {
+        const equip = db.equipamentos.find(e => e.id === p.equipamento_id);
+        return { plano: p, equip, ...calcularStatusManutencao(p, equip) };
+      });
+
+      const qtdOk      = statusPlanos.filter(s => s.status === 'ok').length;
+      const qtdProxima = statusPlanos.filter(s => s.status === 'proxima').length;
+      const qtdVencida = statusPlanos.filter(s => s.status === 'vencida').length;
+      const qtdSemData = statusPlanos.filter(s => s.status === 'sem-data').length;
+      const qtdOcorr   = db.ocorrencias.filter(o => o.status === 'Em andamento').length;
+
+      // ---- KPIs ----
+      const setKpi = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
+      setKpi('dashEquipamentos', db.equipamentos.filter(e => e.status === 'Ativo').length);
+      setKpi('dashPlanos',       db.planos.length);
+      setKpi('dashEmDia',        qtdOk);
+      setKpi('dashProximas',     qtdProxima);
+      setKpi('dashVencidas',     qtdVencida);
+      setKpi('dashOcorrencias',  qtdOcorr);
+      setKpi('dashAgendadas',    qtdProxima); // compatibilidade
+
+      // ---- Popular filtro de equipamentos ----
+      const selEquip = document.getElementById('dashFiltroEquip');
+      if (selEquip) {
+        const opts = ['<option value="todos">Todos os equipamentos</option>'];
+        db.equipamentos.forEach(e => opts.push(`<option value="${e.id}">${e.nome}</option>`));
+        selEquip.innerHTML = opts.join('');
+      }
+
+      // ---- Tabela Consolidada ----
+      const filtroStatus = document.getElementById('dashFiltroStatus')?.value || 'todos';
+      const filtroEquip  = document.getElementById('dashFiltroEquip')?.value  || 'todos';
+
+      let rows = statusPlanos;
+      if (filtroStatus !== 'todos') rows = rows.filter(r => r.status === filtroStatus);
+      if (filtroEquip  !== 'todos') rows = rows.filter(r => r.equip?.id === filtroEquip);
+
+      // Ordenar: vencidas primeiro, depois proximas, ok, sem-data
+      const ordem = { vencida: 0, proxima: 1, ok: 2, 'sem-data': 3 };
+      rows.sort((a, b) => (ordem[a.status] ?? 9) - (ordem[b.status] ?? 9));
+
+      const badgeMap = {
+        vencida:  '<span class="badge-vencida">⚠ Vencida</span>',
+        proxima:  '<span class="badge-proxima">⏳ Próxima</span>',
+        ok:       '<span class="badge-ok">✓ Em Dia</span>',
+        'sem-data':'<span class="badge-sem-data">— Sem Ref.</span>'
+      };
+
+      const tbody = document.getElementById('tabelaManutencoesBody');
+      if (tbody) {
+        if (rows.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999;padding:20px;">Nenhum registro encontrado</td></tr>';
+        } else {
+          tbody.innerHTML = rows.map(r => `
+            <tr>
+              <td><strong>${r.equip?.nome || '—'}</strong><br><small style="color:#888">${r.equip?.tipo || ''}</small></td>
+              <td>${r.plano.nome}</td>
+              <td>${r.plano.tipo_intervalo || '—'}</td>
+              <td>${r.plano.ultima_troca_data ? new Date(r.plano.ultima_troca_data+'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
+              <td>${r.proximaStr}</td>
+              <td style="font-size:0.78rem;color:#555">${r.detalhe}</td>
+              <td>${badgeMap[r.status] || ''}</td>
+            </tr>`).join('');
+        }
+      }
+
+      // ---- Gráficos ----
+      if (typeof Chart === 'undefined') return;
+      destruirGraficos();
+
+      const cores = { vencida: '#dc3545', proxima: '#fd7e14', ok: '#367C2B', 'sem-data': '#6c757d' };
+
+      // Pizza
+      const ctxP = document.getElementById('chartPizza');
+      if (ctxP) {
+        _chartPizza = new Chart(ctxP, {
+          type: 'doughnut',
+          data: {
+            labels: ['Em Dia', 'Próximas', 'Vencidas', 'Sem Ref.'],
+            datasets: [{ data: [qtdOk, qtdProxima, qtdVencida, qtdSemData],
+              backgroundColor: [cores.ok, cores.proxima, cores.vencida, cores['sem-data']],
+              borderWidth: 2, borderColor: '#fff' }]
+          },
+          options: { responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } } }
+          }
+        });
+      }
+
+      // Barras por equipamento
+      const equipNomes = [...new Set(db.equipamentos.filter(e=>e.status==='Ativo').map(e=>e.nome))];
+      const barOk      = equipNomes.map(n => statusPlanos.filter(s=>s.equip?.nome===n && s.status==='ok').length);
+      const barProxima = equipNomes.map(n => statusPlanos.filter(s=>s.equip?.nome===n && s.status==='proxima').length);
+      const barVencida = equipNomes.map(n => statusPlanos.filter(s=>s.equip?.nome===n && s.status==='vencida').length);
+      const shortNames = equipNomes.map(n => n.length > 14 ? n.substring(0,14)+'…' : n);
+
+      const ctxB = document.getElementById('chartBarras');
+      if (ctxB) {
+        _chartBarras = new Chart(ctxB, {
+          type: 'bar',
+          data: {
+            labels: shortNames,
+            datasets: [
+              { label: 'Em Dia',   data: barOk,      backgroundColor: cores.ok },
+              { label: 'Próximas', data: barProxima,  backgroundColor: cores.proxima },
+              { label: 'Vencidas', data: barVencida,  backgroundColor: cores.vencida }
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { x: { stacked: true, ticks: { font: { size: 10 } } }, y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } } },
+            plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 10 } } }
+          }
+        });
+      }
+
+      // Temporal — últimos 6 meses: agendamentos concluídos + ocorrências resolvidas
+      const meses = [];
+      const mesesLabel = [];
+      const hoje = new Date();
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+        meses.push({ ano: d.getFullYear(), mes: d.getMonth() });
+        mesesLabel.push(d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }));
+      }
+
+      const concluidas = meses.map(m => db.agendamentos.filter(a => {
+        if (a.status !== 'Concluído') return false;
+        const d = new Date(a.data || a.data_prevista || '');
+        return d.getFullYear() === m.ano && d.getMonth() === m.mes;
+      }).length);
+
+      const ocorrResolv = meses.map(m => db.ocorrencias.filter(o => {
+        if (o.status !== 'Resolvido') return false;
+        const d = new Date(o.data || '');
+        return d.getFullYear() === m.ano && d.getMonth() === m.mes;
+      }).length);
+
+      const ocorrAbertas = meses.map(m => db.ocorrencias.filter(o => {
+        const d = new Date(o.data || '');
+        return d.getFullYear() === m.ano && d.getMonth() === m.mes;
+      }).length);
+
+      const ctxT = document.getElementById('chartTemporal');
+      if (ctxT) {
+        _chartTemporal = new Chart(ctxT, {
+          type: 'line',
+          data: {
+            labels: mesesLabel,
+            datasets: [
+              { label: 'Manutenções Concluídas', data: concluidas,
+                borderColor: cores.ok, backgroundColor: 'rgba(54,124,43,0.1)',
+                fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: cores.ok },
+              { label: 'Ocorrências Resolvidas', data: ocorrResolv,
+                borderColor: '#0d6efd', backgroundColor: 'rgba(13,110,253,0.07)',
+                fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#0d6efd' },
+              { label: 'Total Ocorrências', data: ocorrAbertas,
+                borderColor: cores.vencida, backgroundColor: 'rgba(220,53,69,0.07)',
+                fill: false, tension: 0.4, pointRadius: 5, borderDash: [5,3], pointBackgroundColor: cores.vencida }
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+            plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } } }
+          }
+        });
+      }
+    }
+
 
     function atualizarDataHoje() {
       const hoje = new Date().toLocaleDateString('pt-BR');
@@ -2144,22 +2559,26 @@
       firebaseDb.ref(path + 'equipamentos').on('value', snap => {
         db.equipamentos = snap.val() || [];
         renderEquipamentos();
+        atualizarDashboard();
       });
       
       firebaseDb.ref(path + 'planos').on('value', snap => {
         db.planos = snap.val() || [];
         renderPlanos();
+        atualizarDashboard();
       });
       
       firebaseDb.ref(path + 'agendamentos').on('value', snap => {
         db.agendamentos = snap.val() || [];
         renderAgendamentos();
         atualizarDashboard();
+        atualizarDashboard();
       });
       
       firebaseDb.ref(path + 'ocorrencias').on('value', snap => {
         db.ocorrencias = snap.val() || [];
         renderOcorrencias();
+        atualizarDashboard();
       });
       
       firebaseDb.ref(path + 'leituras').on('value', snap => {
