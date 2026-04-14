@@ -1626,6 +1626,11 @@
       const el = document.getElementById('dashHoraUpdate');
       if (el) el.textContent = now.toLocaleTimeString('pt-BR');
 
+      // Garantir arrays válidos antes de processar
+      normalizarDb();
+
+      try {
+
       // ---- Calcular status de todos os planos ----
       const statusPlanos = db.planos.filter(p => p.ativo !== false).map(p => {
         const equip = db.equipamentos.find(e => e.id === p.equipamento_id);
@@ -1794,6 +1799,10 @@
             plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } } }
           }
         });
+      }
+
+      } catch(err) {
+        console.error('[Dashboard] Erro ao atualizar dashboard:', err);
       }
     }
 
@@ -2552,37 +2561,53 @@
       });
     }
 
+    // Converte valor do Firebase (objeto ou array) para array JS
+    function toArr(v) {
+      if (!v) return [];
+      if (Array.isArray(v)) return v;
+      return Object.values(v);
+    }
+
+    // Garante que todos os campos de db são arrays (necessário após restaurar do localStorage ou Firebase)
+    function normalizarDb() {
+      db.equipamentos = toArr(db.equipamentos);
+      db.planos       = toArr(db.planos);
+      db.agendamentos = toArr(db.agendamentos);
+      db.ocorrencias  = toArr(db.ocorrencias);
+      db.leituras     = toArr(db.leituras);
+      if (!db.usuarios) db.usuarios = [];
+    }
+
     function carregarDadosDoFirebase() {
       if (!currentUser) return;
       const path = `/pcm/${currentUser.id}/`;
-      
+
       firebaseDb.ref(path + 'equipamentos').on('value', snap => {
-        db.equipamentos = snap.val() || [];
+        db.equipamentos = toArr(snap.val());
         renderEquipamentos();
         atualizarDashboard();
       });
-      
+
       firebaseDb.ref(path + 'planos').on('value', snap => {
-        db.planos = snap.val() || [];
+        db.planos = toArr(snap.val());
         renderPlanos();
         atualizarDashboard();
       });
-      
+
       firebaseDb.ref(path + 'agendamentos').on('value', snap => {
-        db.agendamentos = snap.val() || [];
+        db.agendamentos = toArr(snap.val());
         renderAgendamentos();
         atualizarDashboard();
-        atualizarDashboard();
       });
-      
+
       firebaseDb.ref(path + 'ocorrencias').on('value', snap => {
-        db.ocorrencias = snap.val() || [];
+        db.ocorrencias = toArr(snap.val());
         renderOcorrencias();
         atualizarDashboard();
       });
-      
+
       firebaseDb.ref(path + 'leituras').on('value', snap => {
-        db.leituras = snap.val() || [];
+        db.leituras = toArr(snap.val());
         renderLeituras();
       });
     }
@@ -2604,27 +2629,4 @@
           currentUser = JSON.parse(savedUser);
           const savedDb = localStorage.getItem('pcm_db');
           if (savedDb) {
-            db = JSON.parse(savedDb);
-          }
-          mostrarApp();
-        } catch (e) {
-          console.error('Erro ao carregar sessão salva:', e);
-          document.getElementById('loginScreen').classList.remove('hidden');
-          document.getElementById('mainApp').style.display = 'none';
-        }
-      } else {
-        document.getElementById('loginScreen').classList.remove('hidden');
-        document.getElementById('mainApp').style.display = 'none';
-      }
-      
-      atualizarDataHoje();
-      setInterval(atualizarDataHoje, 1000);
-      
-      // Esconder splash após 2.5 segundos
-      setTimeout(() => {
-        document.getElementById('splashScreen').classList.add('hidden');
-      }, 2500);
-    });
-  </script>
-</body>
-</html>
+            d
