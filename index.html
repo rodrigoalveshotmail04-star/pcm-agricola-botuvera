@@ -2629,4 +2629,29 @@
           currentUser = JSON.parse(savedUser);
           const savedDb = localStorage.getItem('pcm_db');
           if (savedDb) {
-            d
+            db = JSON.parse(savedDb);
+            normalizarDb(); // garante arrays reais (Firebase retorna objetos)
+          }
+          mostrarApp();
+          carregarDadosDoFirebase(); // sincroniza dados frescos do Firebase
+        } catch (e) {
+          console.error('Erro ao carregar sessão salva:', e);
+          document.getElementById('loginScreen').classList.remove('hidden');
+          document.getElementById('mainApp').style.display = 'none';
+        }
+      } else {
+        document.getElementById('loginScreen').classList.remove('hidden');
+        document.getElementById('mainApp').style.display = 'none';
+      }
+      
+      atualizarDataHoje();
+      setInterval(atualizarDataHoje, 1000);
+      
+      // Esconder splash após 2.5 segundos
+      setTimeout(() => {
+        document.getElementById('splashScreen').classList.add('hidden');
+      }, 2500);
+    });
+  </script>
+</body>
+</html>
