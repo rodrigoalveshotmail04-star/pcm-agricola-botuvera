@@ -1102,18 +1102,22 @@
 
     // ==================== UI FUNCTIONS ====================
     function mostrarApp() {
+      // Vai para a tela de módulos (home), não direto ao app
       document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('mainApp').style.display = 'block';
-      const _navU = document.getElementById('navUsuarioAtual'); if (_navU) _navU.textContent = `Olá, ${currentUser.nome}`;
-      
-      // Mostrar tab de usuários apenas para admin
+      document.getElementById('mainApp').style.display = 'none';
+      document.getElementById('homeScreen').style.display = 'block';
+
+      // Saudação na tela home
+      const _homeNome = document.getElementById('homeUsuarioNome');
+      if (_homeNome) _homeNome.textContent = `Bem-vindo, ${currentUser.nome} — selecione um módulo para começar`;
+
+      // Mostrar tab de usuários apenas para admin (quando entrar no módulo)
       const tabUsuarios = document.getElementById('tabUsuarios');
-      if (currentUser.perfil === 'admin') {
-        tabUsuarios.style.display = 'block';
-      } else {
-        tabUsuarios.style.display = 'none';
+      if (tabUsuarios) {
+        tabUsuarios.style.display = currentUser.perfil === 'admin' ? 'block' : 'none';
       }
-      
+
+      // Pré-renderizar dados em background
       atualizarDashboard();
       renderEquipamentos();
       renderPlanos();
@@ -1349,10 +1353,10 @@
           tbody.innerHTML = rows.map(r => {
             const tc = r.equip?.tipo_controle;
             let controle;
-            if (tc === 'KM')         controle = r.equip?.km    ? r.equip.km + ' km'   : '—';
+            if (tc === 'KM')             controle = r.equip?.km    ? r.equip.km + ' km'   : '—';
             else if (tc === 'Horímetro') controle = r.equip?.horas ? r.equip.horas + ' h' : '—';
-            else if (tc === 'Data')  controle = 'Por data';
-            else controle = [r.equip?.km ? r.equip.km + ' km' : '', r.equip?.horas ? r.equip.horas + ' h' : ''].filter(Boolean).join(' / ') || '—';
+            else if (tc === 'Data')      controle = 'Por data';
+            else                         controle = '—';
             return `
             <tr>
               <td><strong>${r.equip?.nome || '—'}</strong><br><small style="color:#888">${r.equip?.tipo || ''}</small></td>
@@ -2472,27 +2476,11 @@
 
     // ==================== INITIALIZATION ====================
     document.addEventListener('DOMContentLoaded', function() {
-      // Verificar se tem usuário salvo
-      const savedUser = localStorage.getItem('currentUser');
-      if (savedUser) {
-        try {
-          currentUser = JSON.parse(savedUser);
-          const savedDb = localStorage.getItem('pcm_db');
-          if (savedDb) {
-            db = JSON.parse(savedDb);
-            normalizarDb(); // garante arrays reais (Firebase retorna objetos)
-          }
-          mostrarApp();
-          carregarDadosDoFirebase(); // sincroniza dados frescos do Firebase
-        } catch (e) {
-          console.error('Erro ao carregar sessão salva:', e);
-          document.getElementById('loginScreen').classList.remove('hidden');
-          document.getElementById('mainApp').style.display = 'none';
-        }
-      } else {
-        document.getElementById('loginScreen').classList.remove('hidden');
-        document.getElementById('mainApp').style.display = 'none';
-      }
+      // Sempre exige login ao abrir/recarregar o sistema — sem restauração de sessão
+      localStorage.removeItem('currentUser');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('mainApp').style.display = 'none';
+      document.getElementById('homeScreen').style.display = 'none';
       
       atualizarDataHoje();
       setInterval(atualizarDataHoje, 1000);
@@ -2505,3 +2493,4 @@
   </script>
 </body>
 </html>
+                                                                                                                                                                                                                                                                                                                                                                                                         
