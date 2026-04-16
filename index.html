@@ -482,9 +482,8 @@
               <thead>
                 <tr>
                   <th>Equipamento</th>
-                  <th>KM / Horas</th>
+                  <th>Controle</th>
                   <th>Plano de Manutenção</th>
-                  <th>Tipo Intervalo</th>
                   <th>Última Troca</th>
                   <th>Próxima Previsão</th>
                   <th>Restante</th>
@@ -657,8 +656,16 @@
           
           <label class="form-label">Horas (Horímetro)</label>
           <input type="number" class="form-control" id="equipHoras" />
-          
-          <label class="form-label">Data última leitura KM</label>
+
+          <label class="form-label mt-2">Tipo de Controle <small class="text-muted">(define como calcular a próxima manutenção)</small></label>
+          <select class="form-select" id="equipTipoControle">
+            <option value="">Sem controle específico</option>
+            <option value="KM">KM (quilômetros)</option>
+            <option value="Horímetro">Horímetro (horas)</option>
+            <option value="Data">Data (dias)</option>
+          </select>
+
+          <label class="form-label mt-2">Data última leitura KM</label>
           <input type="date" class="form-control" id="equipDataKm" />
           
           <label class="form-label">Data última leitura Horas</label>
@@ -1171,49 +1178,58 @@
       const ordemStatus = { vencida: 0, proxima: 1, ok: 2, 'sem-data': 3 };
       const resultados = [];
 
-      // Critério DIAS
-      const intDias = parseInt(plano.intervalo_dias) || 0;
-      if (intDias > 0 && plano.ultima_troca_data) {
-        const ultima = new Date(plano.ultima_troca_data + 'T00:00:00');
-        const proxima = new Date(ultima);
-        proxima.setDate(proxima.getDate() + intDias);
-        const diff = Math.ceil((proxima - hojeD) / 86400000);
-        const proximaStr = proxima.toLocaleDateString('pt-BR');
-        let s, d;
-        if (diff < 0) { s = 'vencida'; d = Math.abs(diff) + ' dias em atraso'; }
-        else if (diff <= ALERTA_DIAS) { s = 'proxima'; d = diff + ' dias restantes'; }
-        else { s = 'ok'; d = diff + ' dias restantes'; }
-        resultados.push({ status: s, detalhe: 'Dias: ' + d, proximaStr, criterio: 'Dias' });
+      // Tipo de controle definido no equipamento (filtra qual critério usar)
+      const tc = equip?.tipo_controle || '';
+
+      // Critério DIAS — usa se tipo='Data' ou sem tipo definido
+      if (!tc || tc === 'Data') {
+        const intDias = parseInt(plano.intervalo_dias) || 0;
+        if (intDias > 0 && plano.ultima_troca_data) {
+          const ultima = new Date(plano.ultima_troca_data + 'T00:00:00');
+          const proxima = new Date(ultima);
+          proxima.setDate(proxima.getDate() + intDias);
+          const diff = Math.ceil((proxima - hojeD) / 86400000);
+          const proximaStr = proxima.toLocaleDateString('pt-BR');
+          let s, d;
+          if (diff < 0) { s = 'vencida'; d = Math.abs(diff) + ' dias em atraso'; }
+          else if (diff <= ALERTA_DIAS) { s = 'proxima'; d = diff + ' dias restantes'; }
+          else { s = 'ok'; d = diff + ' dias restantes'; }
+          resultados.push({ status: s, detalhe: 'Dias: ' + d, proximaStr, criterio: 'Dias' });
+        }
       }
 
-      // Critério KM
-      const intKm = parseFloat(plano.intervalo_km) || 0;
-      if (intKm > 0 && equip) {
-        const kmAtual = parseFloat(equip.km) || 0;
-        const ultimaKm = parseFloat(plano.ultima_troca_km) || parseFloat(plano.ultima_troca_valor) || 0;
-        const proximaKm = ultimaKm + intKm;
-        const diff = proximaKm - kmAtual;
-        const proximaStr = proximaKm.toLocaleString('pt-BR') + ' KM';
-        let s, d;
-        if (diff < 0) { s = 'vencida'; d = Math.abs(diff).toFixed(0) + ' KM excedidos'; }
-        else if (diff <= ALERTA_KM) { s = 'proxima'; d = diff.toFixed(0) + ' KM restantes'; }
-        else { s = 'ok'; d = diff.toFixed(0) + ' KM restantes'; }
-        resultados.push({ status: s, detalhe: 'KM: ' + d, proximaStr, criterio: 'KM' });
+      // Critério KM — usa se tipo='KM' ou sem tipo definido
+      if (!tc || tc === 'KM') {
+        const intKm = parseFloat(plano.intervalo_km) || 0;
+        if (intKm > 0 && equip) {
+          const kmAtual = parseFloat(equip.km) || 0;
+          const ultimaKm = parseFloat(plano.ultima_troca_km) || parseFloat(plano.ultima_troca_valor) || 0;
+          const proximaKm = ultimaKm + intKm;
+          const diff = proximaKm - kmAtual;
+          const proximaStr = proximaKm.toLocaleString('pt-BR') + ' KM';
+          let s, d;
+          if (diff < 0) { s = 'vencida'; d = Math.abs(diff).toFixed(0) + ' KM excedidos'; }
+          else if (diff <= ALERTA_KM) { s = 'proxima'; d = diff.toFixed(0) + ' KM restantes'; }
+          else { s = 'ok'; d = diff.toFixed(0) + ' KM restantes'; }
+          resultados.push({ status: s, detalhe: 'KM: ' + d, proximaStr, criterio: 'KM' });
+        }
       }
 
-      // Critério HORAS
-      const intH = parseFloat(plano.intervalo_horas) || 0;
-      if (intH > 0 && equip) {
-        const horasAtual = parseFloat(equip.horas) || 0;
-        const ultimasH = parseFloat(plano.ultima_troca_horas) || parseFloat(plano.ultima_troca_valor) || 0;
-        const proximaH = ultimasH + intH;
-        const diff = proximaH - horasAtual;
-        const proximaStr = proximaH.toLocaleString('pt-BR') + ' h';
-        let s, d;
-        if (diff < 0) { s = 'vencida'; d = Math.abs(diff).toFixed(0) + ' horas excedidas'; }
-        else if (diff <= ALERTA_HORAS) { s = 'proxima'; d = diff.toFixed(0) + ' horas restantes'; }
-        else { s = 'ok'; d = diff.toFixed(0) + ' horas restantes'; }
-        resultados.push({ status: s, detalhe: 'Horas: ' + d, proximaStr, criterio: 'Horas' });
+      // Critério HORAS — usa se tipo='Horímetro' ou sem tipo definido
+      if (!tc || tc === 'Horímetro') {
+        const intH = parseFloat(plano.intervalo_horas) || 0;
+        if (intH > 0 && equip) {
+          const horasAtual = parseFloat(equip.horas) || 0;
+          const ultimasH = parseFloat(plano.ultima_troca_horas) || parseFloat(plano.ultima_troca_valor) || 0;
+          const proximaH = ultimasH + intH;
+          const diff = proximaH - horasAtual;
+          const proximaStr = proximaH.toLocaleString('pt-BR') + ' h';
+          let s, d;
+          if (diff < 0) { s = 'vencida'; d = Math.abs(diff).toFixed(0) + ' horas excedidas'; }
+          else if (diff <= ALERTA_HORAS) { s = 'proxima'; d = diff.toFixed(0) + ' horas restantes'; }
+          else { s = 'ok'; d = diff.toFixed(0) + ' horas restantes'; }
+          resultados.push({ status: s, detalhe: 'Horas: ' + d, proximaStr, criterio: 'Horas' });
+        }
       }
 
       if (resultados.length === 0) return { status: 'sem-data', detalhe: 'Sem referência', proximaStr: '—' };
@@ -1328,18 +1344,26 @@
       const tbody = document.getElementById('tabelaManutencoesBody');
       if (tbody) {
         if (rows.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#999;padding:20px;">Nenhum registro encontrado</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999;padding:20px;">Nenhum registro encontrado</td></tr>';
         } else {
-          tbody.innerHTML = rows.map(r => `
+          tbody.innerHTML = rows.map(r => {
+            const tc = r.equip?.tipo_controle;
+            let controle;
+            if (tc === 'KM')         controle = r.equip?.km    ? r.equip.km + ' km'   : '—';
+            else if (tc === 'Horímetro') controle = r.equip?.horas ? r.equip.horas + ' h' : '—';
+            else if (tc === 'Data')  controle = 'Por data';
+            else controle = [r.equip?.km ? r.equip.km + ' km' : '', r.equip?.horas ? r.equip.horas + ' h' : ''].filter(Boolean).join(' / ') || '—';
+            return `
             <tr>
               <td><strong>${r.equip?.nome || '—'}</strong><br><small style="color:#888">${r.equip?.tipo || ''}</small></td>
-              <td style="font-size:0.82rem;">${r.equip?.km ? r.equip.km + ' km' : ''}${r.equip?.km && r.equip?.horas ? ' / ' : ''}${r.equip?.horas ? r.equip.horas + ' h' : ''}${!r.equip?.km && !r.equip?.horas ? '—' : ''}</td>
+              <td style="font-size:0.82rem;">${controle}</td>
               <td>${r.plano.nome}</td>
               <td>${r.plano.ultima_troca_data ? new Date(r.plano.ultima_troca_data+'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
               <td>${r.proximaStr}</td>
               <td style="font-size:0.78rem;color:#555">${r.detalhe}</td>
               <td>${badgeMap[r.status] || ''}</td>
-            </tr>`).join('');
+            </tr>`;
+          }).join('');
         }
       }
 
@@ -1615,6 +1639,7 @@
       document.getElementById('equipHoras').value = '';
       document.getElementById('equipDataKm').value = '';
       document.getElementById('equipDataHoras').value = '';
+      document.getElementById('equipTipoControle').value = '';
       document.getElementById('equipObs').value = '';
       new bootstrap.Modal(document.getElementById('modalEquipamento')).show();
     }
@@ -1632,6 +1657,7 @@
         status: document.getElementById('equipStatus').value,
         km: document.getElementById('equipKm').value || 0,
         horas: document.getElementById('equipHoras').value || 0,
+        tipo_controle: document.getElementById('equipTipoControle').value,
         dataKm: document.getElementById('equipDataKm').value,
         dataHoras: document.getElementById('equipDataHoras').value,
         obs: document.getElementById('equipObs').value
@@ -1667,6 +1693,7 @@
       document.getElementById('equipStatus').value = equip.status;
       document.getElementById('equipKm').value = equip.km;
       document.getElementById('equipHoras').value = equip.horas;
+      document.getElementById('equipTipoControle').value = equip.tipo_controle || '';
       document.getElementById('equipDataKm').value = equip.dataKm;
       document.getElementById('equipDataHoras').value = equip.dataHoras;
       document.getElementById('equipObs').value = equip.obs;
@@ -1739,7 +1766,6 @@
       document.getElementById('planoProdutoDescricao').value = '';
       document.getElementById('planoProdutoQuantidade').value = '';
       document.getElementById('planoUltimaTrocaValor').value = '';
-      document.getElementById('planoQuantidadePadrao').value = '';
       document.getElementById('planoUltimaTrocaData').value = '';
       document.getElementById('planoUltimaTrocaTipo').value = '';
       document.getElementById('planoAtivo').checked = true;
@@ -1790,7 +1816,6 @@
       if (!plano) return;
       
       document.getElementById('planoId').value = plano.id;
-      document.getElementById('planoEquipamento').value = plano.equipamento_id;
       document.getElementById('planoNome').value = plano.nome;
       document.getElementById('planoIntervaloDias').value = plano.intervalo_dias;
       document.getElementById('planoIntervaloKm').value = plano.intervalo_km;
@@ -1801,8 +1826,6 @@
       document.getElementById('planoUltimaTrocaData').value = plano.ultima_troca_data || '';
       document.getElementById('planoUltimaTrocaTipo').value = plano.ultima_troca_tipo || '';
       document.getElementById('planoUltimaTrocaValor').value = plano.ultima_troca_valor || '';
-      document.getElementById('planoUltimaTrocaKm').value = plano.ultima_troca_km || '';
-      document.getElementById('planoUltimaTrocaHoras').value = plano.ultima_troca_horas || '';
       document.getElementById('planoAtivo').checked = plano.ativo !== false;
       
       const codigos = plano.equipamentos_codigos || (plano.equipamento_id ? [] : []);
