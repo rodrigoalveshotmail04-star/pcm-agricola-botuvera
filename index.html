@@ -9,29 +9,38 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
   
   <style>
-        :root {
-      --verde: #367C2B;
-      --verde-claro: #F0F7ED;
-      --verde-escuro: #1B4A0A;
-      --cinza-fundo: #f5f5f5;
-      --amarelo: #FFDE00;
+    :root {
+      --verde-escuro: #1E3A1E;
+      --verde-principal: #367C2B;
+      --verde-medio: #4A9B3A;
+      --amarelo-accent: #FFDE00;
+      --fundo-quente: #F5F5F0;
+      --texto-principal: #2C2C2C;
+      --branco: #FFFFFF;
+      --borda-sutil: #E8E8E0;
+      --cinza-claro: #FAFAF8;
+      --cinza-medio: #888888;
+      --cinza-escuro: #666666;
     }
-    
-    * { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    
+
+    * {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+    }
+
     body {
-      background-color: var(--cinza-fundo);
-      color: #333;
+      background-color: var(--fundo-quente);
+      color: var(--texto-principal);
+      transition: all 0.2s ease;
     }
-    
-        /* Splash Screen Styles */
+
+    /* ===== SPLASH SCREEN ===== */
     #splashScreen {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg, #1B4A0A 0%, #367C2B 50%, #1B4A0A 100%);
+      background: linear-gradient(135deg, var(--verde-escuro) 0%, var(--verde-principal) 50%, var(--verde-escuro) 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -48,410 +57,284 @@
       display: none;
     }
 
-    .splash-brand {
-      color: #FFDE00;
-      font-size: 3rem;
-      font-weight: 900;
-      letter-spacing: 6px;
-      font-family: 'Arial Black', sans-serif;
-      animation: fadeInScale 0.8s ease;
-      text-transform: uppercase;
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
     }
 
-    .splash-sub {
-      color: rgba(255,255,255,0.85);
-      font-size: 1rem;
-      letter-spacing: 3px;
-      margin-top: 8px;
-      text-transform: uppercase;
-      animation: fadeInScale 1s ease 0.2s both;
-    }
-
-    .splash-text {
-      color: white;
-      font-size: 1.8rem;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 30px;
-      letter-spacing: 1px;
-      animation: fadeInScale 1.2s ease-out 0.3s both;
-    }
-
-    .splash-spinner {
-      border: 3px solid rgba(255,222,0,0.3);
-      border-top-color: #FFDE00;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-    
-        /* Login Screen */
-    #loginScreen {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #1B4A0A 0%, #367C2B 50%, #1B4A0A 100%);
-    }
-
-    #loginScreen.hidden {
-      display: none;
-    }
-
-    .login-container {
-      background: white;
-      border-radius: 4px;
-      border-top: 6px solid #FFDE00;
-      padding: 40px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      width: 100%;
-      max-width: 400px;
-    }
-
-    .login-logo {
-      display: none;
-    }
-
-    .login-brand {
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: #367C2B;
-      letter-spacing: 4px;
-      font-family: 'Arial Black', sans-serif;
-      text-align: center;
-      text-transform: uppercase;
-    }
-
-    .login-subtitle {
-      font-size: 0.85rem;
-      color: #555;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-top: 4px;
-      text-align: center;
-    }
-
-    .login-title {
-      text-align: center;
-      color: var(--verde);
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 30px;
-    }
-
-    .login-form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .login-form input {
-      padding: 12px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 1rem;
-    }
-
-    .login-form input:focus {
-      outline: none;
-      border-color: var(--verde);
-      box-shadow: 0 0 5px rgba(54, 124, 43, 0.3);
-    }
-
-    .login-btn {
-      padding: 12px;
-      background: #FFDE00 !important;
-      color: #1A1A1A !important;
-      border: none;
-      border-radius: 5px;
-      font-size: 1rem;
-      font-weight: 800;
-      cursor: pointer;
-      transition: background 0.3s;
-      letter-spacing: 1px;
-    }
-
-    .login-btn:hover {
-      background: #e6c800 !important;
-    }
-
-    .login-error {
-      color: #dc3545;
-      text-align: center;
-      font-size: 0.9rem;
-      margin-top: 10px;
-    }
-
-        /* Navbar */
-    .navbar {
-      background: #367C2B !important;
-      border-bottom: 4px solid #FFDE00;
-      padding: 0 16px;
+    /* ===== NAVBAR ===== */
+    nav {
+      background-color: var(--verde-escuro) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       height: 56px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 0 20px;
     }
 
-    .navbar-brand-area {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-botuvera {
-      color: #FFDE00;
-      font-size: 1.5rem;
-      font-weight: 900;
-      letter-spacing: 3px;
-      font-family: 'Arial Black', sans-serif;
-      text-transform: uppercase;
-    }
-
-    .brand-sep {
-      width: 2px;
-      height: 32px;
-      background: rgba(255,222,0,0.5);
-    }
-
-    .brand-pcm {
-      color: rgba(255,255,255,0.92);
-      font-size: 0.88rem;
-      font-weight: 600;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-
-    .navbar-brand {
+    nav .navbar-brand {
+      font-size: 1.2rem;
       font-weight: 700;
-      font-size: 1.1rem;
-      letter-spacing: 1px;
+      color: var(--branco) !important;
+      letter-spacing: -0.5px;
     }
 
-    .nav-link {
-      color: rgba(255,255,255,0.9) !important;
-      transition: color 0.3s;
+    nav .nav-link {
+      color: rgba(255, 255, 255, 0.8) !important;
+      font-size: 0.95rem;
       font-weight: 500;
+      transition: all 0.2s ease;
+      margin: 0 8px;
     }
 
-    .nav-link:hover {
-      color: white !important;
+    nav .nav-link:hover {
+      color: var(--amarelo-accent) !important;
     }
 
-    .nav-link.active {
-      color: white !important;
-      border-bottom: 3px solid #FFDE00;
-      padding-bottom: 5px;
+    nav button {
+      background-color: var(--amarelo-accent) !important;
+      color: var(--texto-principal) !important;
+      font-weight: 700;
+      border: none !important;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
     }
 
-        /* Content Area */
-    .content {
-      display: none;
-      padding: 20px;
+    nav button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 222, 0, 0.3);
     }
 
-    .content.active {
-      display: block;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #ddd;
-    }
-
+    /* ===== TABS ===== */
     .tab-btn {
-      padding: 10px 20px;
-      background: none;
+      padding: 12px 16px;
       border: none;
-      color: #555;
+      background: transparent;
+      color: var(--texto-principal);
       cursor: pointer;
       font-weight: 600;
+      font-size: 0.95rem;
       border-bottom: 3px solid transparent;
-      transition: all 0.3s;
-    }
-
-    .tab-btn.active {
-      color: #367C2B;
-      border-bottom-color: #FFDE00;
-      font-weight: 700;
+      transition: all 0.2s ease;
+      white-space: nowrap;
     }
 
     .tab-btn:hover {
-      color: #367C2B;
-      background: #F0F7ED;
+      color: var(--verde-principal);
+      background-color: rgba(54, 124, 43, 0.05);
     }
 
-        /* Cards */
+    .tab-btn.active {
+      color: var(--verde-principal);
+      border-bottom-color: var(--verde-principal);
+      background-color: rgba(54, 124, 43, 0.08);
+    }
+
+    #tabsContainer {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--borda-sutil);
+      overflow-x: auto;
+      background: var(--branco);
+      padding: 0 20px;
+    }
+
+    /* ===== CARDS ===== */
     .card-equip {
-      border: 1px solid #ddd;
-      border-left: 5px solid #FFDE00;
-      border-radius: 4px;
-      padding: 15px;
-      margin-bottom: 15px;
-      background: white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: box-shadow 0.3s;
+      background: var(--branco);
+      border: 1px solid var(--borda-sutil);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      transition: all 0.2s ease;
     }
 
     .card-equip:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      border-left: 4px solid var(--verde-principal);
     }
 
     .card-title {
-      color: #367C2B;
+      color: var(--texto-principal);
       font-weight: 700;
-      margin-bottom: 10px;
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      margin-top: 0;
     }
 
     .card-meta {
+      color: var(--cinza-escuro);
       font-size: 0.9rem;
-      color: #666;
-      margin: 5px 0;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 6px;
     }
 
-    .badge-status {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.8rem;
+    .card-meta strong {
+      color: var(--texto-principal);
       font-weight: 600;
     }
 
-    .badge-ativo {
-      background: #d4edda;
-      color: #155724;
+    /* ===== KPI CARDS ===== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
     }
 
-    .badge-inativo {
-      background: #f8d7da;
-      color: #721c24;
+    .kpi-card {
+      background: var(--branco);
+      border: 1px solid var(--borda-sutil);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      border-top: 4px solid var(--verde-principal);
+      text-align: center;
+      transition: all 0.2s ease;
     }
 
-    .badge-vencido {
-      background: #dc3545;
-      color: white;
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     }
 
-    .badge-pendente {
-      background: #FFDE00;
-      color: #1A1A1A;
+    .kpi-card.kpi-verde { border-top-color: #276221; }
+    .kpi-card.kpi-amarelo { border-top-color: var(--amarelo-accent); }
+    .kpi-card.kpi-laranja { border-top-color: #F59E0B; }
+    .kpi-card.kpi-vermelho { border-top-color: #D32F2F; }
+    .kpi-card.kpi-azul { border-top-color: #1976D2; }
+
+    .kpi-value {
+      font-size: 2.5rem;
       font-weight: 700;
+      color: var(--verde-principal);
+      margin-bottom: 8px;
+    }
+
+    .kpi-card.kpi-verde .kpi-value { color: #276221; }
+    .kpi-card.kpi-amarelo .kpi-value { color: var(--amarelo-accent); }
+    .kpi-card.kpi-laranja .kpi-value { color: #F59E0B; }
+    .kpi-card.kpi-vermelho .kpi-value { color: #D32F2F; }
+    .kpi-card.kpi-azul .kpi-value { color: #1976D2; }
+
+    .kpi-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--cinza-escuro);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .kpi-sub {
+      font-size: 0.75rem;
+      color: var(--cinza-medio);
+      margin-top: 6px;
+    }
+
+    /* ===== STATUS BADGES ===== */
+    .badge-status {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-align: center;
     }
 
     .badge-ok {
-      background: #367C2B;
-      color: white;
+      background-color: #F0FBF0;
+      color: #276221;
+      border: 1px solid #BBE0B3;
     }
 
-    .status-em-andamento {
-      background: #f8d7da;
-      color: #721c24;
+    .badge-vencida {
+      background-color: #FFF1F0;
+      color: #D32F2F;
+      border: 1px solid #FECACA;
     }
 
-    .status-resolvido {
-      background: #d4edda;
-      color: #155724;
+    .badge-proxima {
+      background-color: #FFFBEB;
+      color: #B45309;
+      border: 1px solid #FDE68A;
     }
 
-    .status-aguardando {
-      background: #fff3cd;
-      color: #856404;
+    .badge-sem-data {
+      background-color: #F5F5F5;
+      color: var(--cinza-escuro);
+      border: 1px solid #DDD;
     }
 
-        /* Modals */
-    .modal-header {
-      background: #367C2B;
-      color: white;
-      border-bottom: 3px solid #FFDE00;
+    .badge-ativo {
+      background-color: #E8F5E9;
+      color: #276221;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
     }
 
-    .modal-header .btn-close {
-      filter: brightness(0) invert(1);
+    .badge-inativo {
+      background-color: #F5F5F5;
+      color: var(--cinza-escuro);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
     }
 
-    .modal-title {
-      font-weight: 700;
-    }
-
-    .form-label {
-      color: #333;
+    /* ===== BUTTONS ===== */
+    .btn-primary {
+      background-color: var(--verde-principal) !important;
+      border: none !important;
+      color: var(--branco) !important;
       font-weight: 600;
-      margin-top: 10px;
-      margin-bottom: 5px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      padding: 8px 16px;
     }
 
-    .form-control, .form-select {
-      border: 1px solid #ddd;
-      border-radius: 5px;
+    .btn-primary:hover {
+      background-color: var(--verde-medio) !important;
+      transform: translateY(-2px);
     }
 
-    .form-control:focus, .form-select:focus {
-      border-color: #367C2B;
-      box-shadow: 0 0 5px rgba(54, 124, 43, 0.3);
+    .btn-outline-success {
+      border: 2px solid var(--verde-principal) !important;
+      color: var(--verde-principal) !important;
+      background: transparent !important;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: all 0.2s ease;
     }
 
-        /* Buttons */
-    .btn-verde {
-      background: #FFDE00 !important;
-      color: #1A1A1A !important;
-      border: none;
-      font-weight: 700;
+    .btn-outline-success:hover {
+      background-color: rgba(54, 124, 43, 0.1) !important;
     }
 
-    .btn-verde:hover {
-      background: #e6c800 !important;
-      color: #1A1A1A !important;
+    .btn-secondary {
+      background-color: var(--branco) !important;
+      border: 1px solid var(--borda-sutil) !important;
+      color: var(--texto-principal) !important;
+      font-weight: 600;
+      border-radius: 6px;
     }
 
-    .btn-success, .btn-primary {
-      background: #FFDE00 !important;
-      color: #1A1A1A !important;
-      border-color: #FFDE00 !important;
-      font-weight: 700;
+    .btn-secondary:hover {
+      background-color: var(--cinza-claro) !important;
     }
 
-    .btn-success:hover, .btn-primary:hover {
-      background: #e6c800 !important;
-      border-color: #e6c800 !important;
-      color: #1A1A1A !important;
+    .btn-danger {
+      background-color: #D32F2F !important;
+      border: none !important;
+      color: var(--branco) !important;
+      font-weight: 600;
+      border-radius: 6px;
+      transition: all 0.2s ease;
     }
 
-    .btn-warning {
-      background: #FFDE00 !important;
-      color: #1A1A1A !important;
-      border-color: #FFDE00 !important;
-      font-weight: 800;
-    }
-
-    .btn-warning:hover {
-      background: #e6c800 !important;
-      border-color: #e6c800 !important;
-    }
-
-    .btn-outline-success, .btn-outline-primary {
-      color: #367C2B !important;
-      border-color: #367C2B !important;
-    }
-
-    .btn-outline-success:hover, .btn-outline-primary:hover {
-      background: #367C2B;
-      color: white !important;
-    }
-
-    .btn-outline-light {
-      color: white !important;
-      border-color: rgba(255,255,255,0.7) !important;
-    }
-
-    .btn-outline-light:hover {
-      background: rgba(255,255,255,0.2);
+    .btn-danger:hover {
+      background-color: #B71C1C !important;
     }
 
     .btn-sm {
@@ -459,345 +342,388 @@
       font-size: 0.85rem;
     }
 
-    /* Table */
-    .table {
-      background: white;
-      border-radius: 5px;
-      overflow: hidden;
-    }
-    
-    .table-hover tbody tr:hover {
-      background: #f9f9f9;
-    }
-    
-        /* Dashboard */
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    .dashboard-card {
-      background: white;
-      padding: 20px;
-      border-radius: 4px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      border-left: 5px solid #FFDE00;
-    }
-
-    .dashboard-card h3 {
-      color: #888;
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .dashboard-card .value {
-      font-size: 2.5rem;
-      font-weight: 900;
-      color: #367C2B;
-    }
-
-    .dashboard-card .subtitle {
-      font-size: 0.85rem;
-      color: #999;
-      margin-top: 5px;
-    }
-
-    .stat-card {
-      border-left: 5px solid #FFDE00;
-      border-radius: 4px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-
-    .stat-card .stat-value {
-      color: #367C2B;
-      font-size: 2.5rem;
-      font-weight: 900;
-    }
-
-    .stat-card .stat-label {
-      color: #888;
-      font-size: 0.75rem;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    
-    /* Section Titles */
-    h2, .section-title {
-      border-left: 5px solid #FFDE00;
-      padding-left: 12px;
-      color: #1B4A0A;
-      font-weight: 700;
-    }
-
-    
-    @media (max-width: 768px) {
-      .tabs {
-        gap: 5px;
-      }
-      
-      .tab-btn {
-        padding: 8px 12px;
-        font-size: 0.9rem;
-      }
-      
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  
-    /* Additional Badge Styles */
-    #statusBadge.bg-success {
-      background: #367C2B !important;
-      border: 1px solid #FFDE00;
-    }
-
-
-    /* ===== TELA INICIAL — MÓDULOS ===== */
-    #homeScreen {
-      display: none;
-      min-height: 100vh;
-      background: #f5f5f0;
-    }
-    .home-navbar {
-      background: #367C2B;
-      border-bottom: 4px solid #FFDE00;
-      padding: 0.75rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .home-navbar .brand-home {
-      color: #FFFFFF;
-      font-size: 1.5rem;
-      font-weight: 900;
-      letter-spacing: 3px;
-    }
-    .home-navbar .subtitle-home {
-      color: rgba(255,255,255,0.8);
-      font-size: 0.85rem;
-      font-weight: 600;
-      letter-spacing: 1px;
-      margin-left: 12px;
-      padding-left: 12px;
-      border-left: 1px solid rgba(255,255,255,0.4);
-    }
-    .home-welcome {
-      text-align: center;
-      padding: 48px 16px 24px;
-    }
-    .home-welcome h2 {
-      color: #1B4A0A;
-      font-weight: 800;
-      font-size: 1.8rem;
-      margin-bottom: 6px;
-    }
-    .home-welcome p {
-      color: #555;
-      font-size: 1rem;
-    }
-    .modules-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 24px;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 16px 24px 48px;
-    }
-    .module-card {
-      background: #fff;
-      border-radius: 12px;
-      border: 2px solid #e8e8e8;
-      border-left: 6px solid #367C2B;
-      padding: 28px 24px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-decoration: none;
-      display: block;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-    .module-card:hover {
-      border-left-color: #FFDE00;
-      box-shadow: 0 6px 20px rgba(54,124,43,0.15);
-      transform: translateY(-3px);
-    }
-    .module-card .mod-icon {
-      width: 56px;
-      height: 56px;
-      background: linear-gradient(135deg, #367C2B, #1B4A0A);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-    }
-    .module-card .mod-icon i {
-      font-size: 1.5rem;
-      color: #FFDE00;
-    }
-    .module-card .mod-title {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: #1B4A0A;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .module-card .mod-desc {
-      font-size: 0.85rem;
-      color: #666;
-      line-height: 1.5;
-    }
-    .module-card .mod-badge {
-      display: inline-block;
-      background: #FFDE00;
-      color: #1A1A1A;
+    .btn-xs {
+      padding: 2px 6px;
       font-size: 0.7rem;
+      background-color: var(--verde-principal) !important;
+      color: var(--branco) !important;
+      border: none !important;
+      border-radius: 4px;
+    }
+
+    /* ===== FORMS & MODALS ===== */
+    .form-label {
+      color: var(--texto-principal);
+      font-weight: 500;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .form-control,
+    .form-select {
+      border: 1px solid var(--borda-sutil) !important;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      background-color: var(--branco);
+      color: var(--texto-principal);
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--verde-principal) !important;
+      box-shadow: 0 0 0 3px rgba(54, 124, 43, 0.1) !important;
+    }
+
+    .modal-content {
+      border: 1px solid var(--borda-sutil);
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+      border-bottom: 1px solid var(--borda-sutil);
+      background-color: var(--branco);
+      padding: 20px;
+    }
+
+    .modal-title {
+      color: var(--texto-principal);
       font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 20px;
-      margin-top: 12px;
+      font-size: 1.1rem;
+    }
+
+    .modal-body {
+      padding: 20px;
+      background-color: var(--fundo-quente);
+    }
+
+    .modal-footer {
+      border-top: 1px solid var(--borda-sutil);
+      background-color: var(--branco);
+      padding: 16px 20px;
+    }
+
+    /* ===== TABLES ===== */
+    .table {
+      background-color: var(--branco);
+      margin-bottom: 0;
+    }
+
+    .table thead th {
+      background-color: var(--branco);
+      color: var(--texto-principal);
+      font-weight: 700;
+      border-bottom: 2px solid var(--borda-sutil);
+      padding: 12px;
+      font-size: 0.9rem;
+      text-transform: none;
+    }
+
+    .table tbody tr {
+      border-bottom: 1px solid var(--borda-sutil);
+      transition: all 0.2s ease;
+    }
+
+    .table tbody tr:nth-child(odd) {
+      background-color: var(--cinza-claro);
+    }
+
+    .table tbody tr:hover {
+      background-color: rgba(54, 124, 43, 0.05);
+    }
+
+    .table td {
+      padding: 12px;
+      color: var(--texto-principal);
+      font-size: 0.9rem;
+      vertical-align: middle;
+    }
+
+    /* ===== DASHBOARD ===== */
+    .dash-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .dash-title h2 {
+      color: var(--verde-principal);
+      border-left: 5px solid var(--amarelo-accent);
+      padding-left: 12px;
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .dash-update {
+      font-size: 0.75rem;
+      color: var(--cinza-medio);
+      font-weight: 500;
+    }
+
+    .dash-filter-bar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      background: var(--branco);
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid var(--borda-sutil);
+    }
+
+    .dash-filter-bar select,
+    .dash-filter-bar input {
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      border: 1px solid var(--borda-sutil);
+      border-radius: 6px;
+      background-color: var(--branco);
+      color: var(--texto-principal);
+    }
+
+    .dash-filter-bar label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--cinza-escuro);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    .module-card-coming {
-      opacity: 0.5;
-      cursor: default;
-      pointer-events: none;
-    }
-    .module-card-coming .mod-icon {
-      background: #ccc;
-    }
-    .module-card-coming .mod-badge {
-      background: #ddd;
-      color: #999;
-    }
-    @media (max-width: 600px) {
-      .modules-grid { grid-template-columns: 1fr; padding: 16px; }
-    }
 
-
-    /* ===== DASHBOARD GERENCIAL ===== */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 14px;
+    .dash-table-section {
+      background: var(--branco);
+      border: 1px solid var(--borda-sutil);
+      border-radius: 8px;
+      padding: 20px;
       margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     }
-    @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 500px) { .kpi-grid { grid-template-columns: 1fr; } }
 
-    .kpi-card {
-      background: #fff;
-      border-radius: 10px;
-      padding: 18px 16px;
-      border-left: 5px solid #ccc;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    .dash-table-section h4 {
+      color: var(--verde-principal);
+      font-weight: 700;
+      margin-bottom: 16px;
+      font-size: 1.1rem;
     }
-    .kpi-card .kpi-value {
-      font-size: 2.2rem;
-      font-weight: 900;
-      line-height: 1;
-    }
-    .kpi-card .kpi-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #777; font-weight: 600; }
-    .kpi-card .kpi-sub { font-size: 0.78rem; color: #999; }
-    .kpi-verde   { border-left-color: #367C2B; } .kpi-verde   .kpi-value { color: #367C2B; }
-    .kpi-amarelo { border-left-color: #FFDE00; } .kpi-amarelo .kpi-value { color: #b8a000; }
-    .kpi-vermelho{ border-left-color: #dc3545; } .kpi-vermelho .kpi-value { color: #dc3545; }
-    .kpi-laranja { border-left-color: #fd7e14; } .kpi-laranja .kpi-value { color: #fd7e14; }
-    .kpi-azul    { border-left-color: #0d6efd; } .kpi-azul    .kpi-value { color: #0d6efd; }
 
     .dash-charts-row {
       display: grid;
-      grid-template-columns: 1fr 1.6fr;
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-    @media (max-width: 800px) { .dash-charts-row { grid-template-columns: 1fr; } }
-
-    .dash-chart-box {
-      background: #fff;
-      border-radius: 10px;
-      padding: 18px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      border-top: 3px solid #367C2B;
-    }
-    .dash-chart-box.full { margin-bottom: 18px; }
-    .dash-chart-box h4 {
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #1B4A0A;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .dash-chart-box h4 i { color: #FFDE00; background: #367C2B; padding: 4px 6px; border-radius: 5px; }
-
-    .dash-table-section {
-      background: #fff;
-      border-radius: 10px;
-      padding: 18px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      border-top: 3px solid #367C2B;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
       margin-bottom: 24px;
     }
-    .dash-table-section h4 {
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #1B4A0A;
-      margin-bottom: 14px;
+
+    .dash-chart-box {
+      background: var(--branco);
+      border: 1px solid var(--borda-sutil);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .chart-canvas-wrap {
+      position: relative;
+      height: 220px;
+    }
+
+    .chart-canvas-wrap-lg {
+      position: relative;
+      height: 200px;
+    }
+
+    /* ===== LOGIN SCREEN ===== */
+    #loginScreen {
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--verde-escuro) 0%, var(--verde-principal) 100%);
     }
-    .dash-table-section h4 i { color: #FFDE00; background: #367C2B; padding: 4px 6px; border-radius: 5px; }
 
-    #tabelaManutencoes { font-size: 0.82rem; width: 100%; border-collapse: collapse; }
-    #tabelaManutencoes thead th {
-      background: #1B4A0A; color: #FFDE00;
-      padding: 8px 10px; text-align: left;
-      font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px;
+    .login-card {
+      background: var(--branco);
+      border-radius: 12px;
+      padding: 40px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     }
-    #tabelaManutencoes tbody tr:nth-child(even) { background: #f9f9f5; }
-    #tabelaManutencoes tbody td { padding: 8px 10px; border-bottom: 1px solid #eee; vertical-align: middle; }
-    #tabelaManutencoes tbody tr:hover { background: #f0f7ed; }
 
-    .badge-vencida  { background:#dc3545; color:#fff; padding:3px 8px; border-radius:20px; font-size:0.7rem; font-weight:700; white-space:nowrap; }
-    .badge-proxima  { background:#fd7e14; color:#fff; padding:3px 8px; border-radius:20px; font-size:0.7rem; font-weight:700; white-space:nowrap; }
-    .badge-ok       { background:#367C2B; color:#fff; padding:3px 8px; border-radius:20px; font-size:0.7rem; font-weight:700; white-space:nowrap; }
-    .badge-sem-data { background:#6c757d; color:#fff; padding:3px 8px; border-radius:20px; font-size:0.7rem; font-weight:700; white-space:nowrap; }
-
-    .dash-filter-bar {
-      display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px;
+    .login-card h2 {
+      color: var(--verde-principal);
+      font-weight: 700;
+      margin-bottom: 24px;
+      text-align: center;
+      font-size: 1.5rem;
     }
-    .dash-filter-bar select, .dash-filter-bar input {
-      font-size: 0.8rem; padding: 5px 10px;
-      border: 1px solid #ddd; border-radius: 6px;
+
+    .login-card .form-group {
+      margin-bottom: 16px;
     }
-    .dash-filter-bar label { font-size: 0.78rem; font-weight: 600; color: #555; }
 
-    .dash-title {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+    .login-card .form-control {
+      border: 1px solid var(--borda-sutil);
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 0.95rem;
     }
-    .dash-title h2 { color: #367C2B; border-left: 5px solid #FFDE00; padding-left: 12px; margin: 0; font-size: 1.3rem; }
-    .dash-title .dash-update { font-size: 0.75rem; color: #888; }
 
-    .chart-canvas-wrap { position: relative; height: 220px; }
-    .chart-canvas-wrap-lg { position: relative; height: 200px; }
+    .login-card .btn {
+      width: 100%;
+      padding: 12px;
+      font-weight: 700;
+      margin-top: 12px;
+      border-radius: 6px;
+    }
 
+    /* ===== HOME/MODULES ===== */
+    #homeScreen {
+      padding: 40px 20px;
+    }
+
+    .home-modules {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .mod-card {
+      background: var(--branco);
+      border: 2px solid var(--borda-sutil);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .mod-card:hover {
+      border-color: var(--verde-principal);
+      box-shadow: 0 8px 24px rgba(54, 124, 43, 0.15);
+      transform: translateY(-4px);
+    }
+
+    .mod-card i {
+      font-size: 3rem;
+      color: var(--verde-principal);
+      margin-bottom: 12px;
+    }
+
+    .mod-card h3 {
+      color: var(--texto-principal);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .mod-card p {
+      color: var(--cinza-medio);
+      font-size: 0.9rem;
+    }
+
+    /* ===== CONTENT AREA ===== */
+    .content {
+      display: none;
+      padding: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ===== UTILITIES ===== */
+    .text-muted {
+      color: var(--cinza-medio) !important;
+    }
+
+    .d-flex {
+      display: flex;
+    }
+
+    .gap-2 {
+      gap: 12px;
+    }
+
+    .mb-3 {
+      margin-bottom: 20px;
+    }
+
+    .mb-2 {
+      margin-bottom: 12px;
+    }
+
+    .mt-2 {
+      margin-top: 12px;
+    }
+
+    .pb-2 {
+      padding-bottom: 12px;
+    }
+
+    .border-bottom {
+      border-bottom: 1px solid var(--borda-sutil);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .dash-charts-row {
+        grid-template-columns: 1fr;
+      }
+
+      .card-equip {
+        padding: 16px;
+      }
+
+      .tab-btn {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+      }
+
+      .modal-body {
+        padding: 16px;
+      }
+
+      .login-card {
+        padding: 24px;
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      nav {
+        padding: 0 12px;
+      }
+
+      .dash-title {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .content {
+        padding: 12px;
+      }
+    }
   </style>
 </head>
 
@@ -965,7 +891,29 @@
           </div>
         </div>
 
-        <!-- Tabela Consolidada -->
+        <!-- Tabela Ocorrências -->
+        <div class="dash-table-section">
+          <h4><i class="fas fa-bolt"></i>Análise de Ocorrências</h4>
+          <div style="overflow-x:auto;">
+            <table id="tabelaOcorrenciasDash" class="table table-sm table-hover">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Tipo de Ocorrência</th>
+                  <th>Equipamento</th>
+                  <th>Produto</th>
+                  <th>Quantidade</th>
+                  <th>Setor</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaOcorrenciasDashBody">
+                <tr><td colspan="6" style="text-align:center;color:#999;padding:15px;">Sem ocorrências</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+                <!-- Tabela Consolidada -->
         <div class="dash-table-section">
           <h4><i class="fas fa-list-alt"></i>Situação Consolidada das Manutenções</h4>
           <div class="dash-filter-bar">
@@ -986,6 +934,7 @@
               <thead>
                 <tr>
                   <th>Equipamento</th>
+                  <th>KM / Horas</th>
                   <th>Plano de Manutenção</th>
                   <th>Tipo Intervalo</th>
                   <th>Última Troca</th>
@@ -1024,15 +973,33 @@
         <div id="containerPlanos"></div>
       </div>
 
-      <!-- AGENDAMENTOS -->
+      <!-- AGENDAMENTOS + SERVIÇOS -->
       <div id="agendamentos" class="content">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2 style="color: #367C2B; border-left: 5px solid #FFDE00; padding-left: 12px;">Agendamentos</h2>
-          <button class="btn btn-primary" style="background: #FFDE00 !important; color: #1A1A1A !important; font-weight: 700; border: none;" onclick="novoAgendamento()">
-            <i class="fas fa-plus me-2"></i>Novo Agendamento
-          </button>
+        <!-- Sub-tabs -->
+        <div class="d-flex gap-2 mb-3 border-bottom pb-2">
+          <button class="btn btn-sm" id="subTabAgend" style="background:#367C2B;color:#fff;font-weight:700;" onclick="mostrarSubTab('agend')"><i class="fas fa-calendar-alt me-1"></i>Agendamentos</button>
+          <button class="btn btn-sm btn-outline-secondary" id="subTabServ" onclick="mostrarSubTab('serv')"><i class="fas fa-wrench me-1"></i>Serviços Executados</button>
         </div>
-        <div id="containerAgendamentos"></div>
+        <!-- Agendamentos -->
+        <div id="subAgend">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 style="color: #367C2B; border-left: 5px solid #FFDE00; padding-left: 12px;">Agendamentos</h2>
+            <button class="btn btn-primary" style="background: #FFDE00 !important; color: #1A1A1A !important; font-weight: 700; border: none;" onclick="novoAgendamento()">
+              <i class="fas fa-plus me-2"></i>Novo Agendamento
+            </button>
+          </div>
+          <div id="containerAgendamentos"></div>
+        </div>
+        <!-- Serviços Executados -->
+        <div id="subServ" style="display:none;">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 style="color: #367C2B; border-left: 5px solid #FFDE00; padding-left: 12px;">Serviços Executados</h2>
+            <button class="btn btn-primary" style="background: #FFDE00 !important; color: #1A1A1A !important; font-weight: 700; border: none;" onclick="novoServico()">
+              <i class="fas fa-plus me-2"></i>Registrar Serviço
+            </button>
+          </div>
+          <div id="containerServicos"></div>
+        </div>
       </div>
 
       <!-- OCORRÊNCIAS -->
@@ -1094,6 +1061,10 @@
             <option value="">Selecione...</option>
             <option value="Lavoura">Lavoura</option>
             <option value="Pecuária">Pecuária</option>
+            <option value="Oficina">Oficina</option>
+            <option value="Lavador">Lavador</option>
+            <option value="Abastecimento">Abastecimento</option>
+            <option value="Confinamento">Confinamento</option>
           </select>
           
           <label class="form-label">Tipo *</label>
@@ -1103,7 +1074,12 @@
             <option value="Colheitadeira">Colheitadeira</option>
             <option value="Motoniveladora">Motoniveladora</option>
             <option value="Forrageira">Forrageira</option>
-            <option value="Motor Estacionário">Motor Estacionário</option>
+            <option value="Gerador a Gasolina">Gerador a Gasolina</option>
+            <option value="Gerador a Diesel">Gerador a Diesel</option>
+            <option value="Roçadeira Hidráulica">Roçadeira Hidráulica</option>
+            <option value="Compressor de Ar">Compressor de Ar</option>
+            <option value="Prensa Hidráulica">Prensa Hidráulica</option>
+            <option value="Outros">Outros</option>
             <option value="Escavadeira">Escavadeira</option>
             <option value="Plantadeira">Plantadeira</option>
             <option value="Plataforma de Corte">Plataforma de Corte</option>
@@ -1162,23 +1138,18 @@
         <div class="modal-body">
           <input type="hidden" id="planoId" />
           
-          <label class="form-label">Equipamento *</label>
-          <select class="form-select" id="planoEquipamento" required>
-            <option value="">Selecione um equipamento</option>
-          </select>
+          <label class="form-label">Equipamentos Vinculados <small class="text-muted">(via Código do Bem)</small></label>
+          <div class="d-flex gap-2 mb-2">
+            <input type="text" class="form-control" id="planoCodigo" placeholder="Digite o Código do Bem e pressione Adicionar" />
+            <button type="button" class="btn btn-outline-success" onclick="adicionarCodigoPlano()">+</button>
+          </div>
+          <div id="planoCodigos" class="mb-2" style="min-height:32px;"></div>
+          <input type="hidden" id="planoEquipamentosJson" value="[]" />
           
           <label class="form-label">Nome do Plano *</label>
           <input type="text" class="form-control" id="planoNome" placeholder="Ex: Troca de óleo" required />
           
-          <label class="form-label">Tipo de Intervalo *</label>
-          <select class="form-select" id="planoTipoIntervalo" required>
-            <option value="">Selecione...</option>
-            <option value="Data">Data</option>
-            <option value="KM">KM</option>
-            <option value="Horas">Horas</option>
-          </select>
-          
-          <label class="form-label">Intervalo em Dias</label>
+<label class="form-label">Intervalo em Dias</label>
           <input type="number" class="form-control" id="planoIntervaloDias" />
           
           <label class="form-label">Intervalo em KM</label>
@@ -1373,7 +1344,50 @@
     </div>
   </div>
 
-  <!-- Modal Leitura -->
+  <!-- Modal Serviço -->
+  <div class="modal fade" id="modalServico" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-wrench me-2"></i>Registro de Serviço Executado</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="serviId" />
+          <label class="form-label">Equipamento *</label>
+          <select class="form-select" id="serviEquipamento" required onchange="filtrarPlanosServico()">
+            <option value="">Selecione um equipamento</option>
+          </select>
+          <label class="form-label mt-2">Plano Executado *</label>
+          <select class="form-select" id="serviPlano" required>
+            <option value="">Selecione um plano</option>
+          </select>
+          <label class="form-label mt-2">Nº Ordem de Serviço (OS)</label>
+          <input type="text" class="form-control" id="serviNumOs" placeholder="Número da OS" />
+          <label class="form-label mt-2">Executante *</label>
+          <input type="text" class="form-control" id="serviExecutante" placeholder="Ex: Meloso" required />
+          <label class="form-label mt-2">Tipo de Medidor</label>
+          <select class="form-select" id="serviTipoMedidor">
+            <option value="">Não informado</option>
+            <option value="KM">KM</option>
+            <option value="Horas">Horas</option>
+          </select>
+          <label class="form-label mt-2">KM / Horímetro na Execução</label>
+          <input type="number" class="form-control" id="serviValorMedidor" placeholder="Valor no momento da execução" />
+          <label class="form-label mt-2">Data de Execução *</label>
+          <input type="date" class="form-control" id="serviDataExecucao" required />
+          <label class="form-label mt-2">Observações</label>
+          <textarea class="form-control" id="serviObs" rows="2"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" style="background:#FFDE00!important;color:#1A1A1A!important;font-weight:700;border:none;" onclick="salvarServico()">Finalizar Serviço</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Modal Leitura -->
   <div class="modal fade" id="modalLeitura" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -1434,7 +1448,8 @@
       planos: [],
       agendamentos: [],
       ocorrencias: [],
-      leituras: []
+      leituras: [],
+      servicos: []
     };
     
     let currentUser = null;
@@ -1550,6 +1565,7 @@
       renderAgendamentos();
       renderOcorrencias();
       renderLeituras();
+      renderServicos();
       renderUsuarios();
     }
 
@@ -1570,45 +1586,96 @@
 
 
     // ==================== LÓGICA DE STATUS DE MANUTENÇÃO ====================
-    function calcularStatusManutencao(plano, equip) {
-      const hoje = new Date(); hoje.setHours(0,0,0,0);
+    function adicionarCodigoPlano() {
+      const input = document.getElementById('planoCodigo');
+      const codigo = (input.value || '').trim();
+      if (!codigo) return;
+      const existing = JSON.parse(document.getElementById('planoEquipamentosJson').value || '[]');
+      if (existing.includes(codigo)) { alert('Código já adicionado'); return; }
+      existing.push(codigo);
+      document.getElementById('planoEquipamentosJson').value = JSON.stringify(existing);
+      input.value = '';
+      renderPlanosCodigos();
+    }
+    function removerCodigoPlano(codigo) {
+      const existing = JSON.parse(document.getElementById('planoEquipamentosJson').value || '[]');
+      const novo = existing.filter(c => c !== codigo);
+      document.getElementById('planoEquipamentosJson').value = JSON.stringify(novo);
+      renderPlanosCodigos();
+    }
+    function renderPlanosCodigos() {
+      const codigos = JSON.parse(document.getElementById('planoEquipamentosJson').value || '[]');
+      const div = document.getElementById('planoCodigos');
+      if (!div) return;
+      if (codigos.length === 0) {
+        div.innerHTML = '<span class="text-muted" style="font-size:0.82rem;">Nenhum equipamento vinculado</span>';
+        return;
+      }
+      div.innerHTML = codigos.map(c => {
+        const equip = db.equipamentos.find(e => e.codigo === c);
+        return `<span class="badge bg-secondary me-1 mb-1" style="font-size:0.8rem;cursor:pointer;" onclick="removerCodigoPlano('${c}')" title="Clique para remover">${c}${equip ? ' — ' + equip.nome : ''} ✕</span>`;
+      }).join('');
+    }
+
+        function calcularStatusManutencao(plano, equip) {
+      const hojeD = new Date(); hojeD.setHours(0,0,0,0);
       const ALERTA_DIAS = 7, ALERTA_KM = 500, ALERTA_HORAS = 20;
-      let status = 'sem-data', detalhe = 'Sem referência', proximaStr = '-';
+      const ordemStatus = { vencida: 0, proxima: 1, ok: 2, 'sem-data': 3 };
+      const resultados = [];
 
-      const tipo = plano.tipo_intervalo;
-
-      if ((tipo === 'Data' || tipo === 'Dias') && plano.ultima_troca_data && plano.intervalo_dias > 0) {
+      // Critério DIAS
+      const intDias = parseInt(plano.intervalo_dias) || 0;
+      if (intDias > 0 && plano.ultima_troca_data) {
         const ultima = new Date(plano.ultima_troca_data + 'T00:00:00');
         const proxima = new Date(ultima);
-        proxima.setDate(proxima.getDate() + parseInt(plano.intervalo_dias));
-        const diff = Math.ceil((proxima - hoje) / 86400000);
-        proximaStr = proxima.toLocaleDateString('pt-BR');
-        if (diff < 0)           { status = 'vencida';  detalhe = Math.abs(diff) + ' dias em atraso'; }
-        else if (diff <= ALERTA_DIAS) { status = 'proxima';  detalhe = diff + ' dias restantes'; }
-        else                    { status = 'ok';        detalhe = diff + ' dias restantes'; }
-
-      } else if (tipo === 'KM' && plano.intervalo_km > 0) {
-        const kmAtual = parseFloat(equip?.km) || 0;
-        const ultimaKm = parseFloat(plano.ultima_troca_valor) || 0;
-        const proximaKm = ultimaKm + parseFloat(plano.intervalo_km);
-        const diff = proximaKm - kmAtual;
-        proximaStr = proximaKm.toLocaleString('pt-BR') + ' KM';
-        if (diff < 0)              { status = 'vencida';  detalhe = Math.abs(diff).toFixed(0) + ' KM excedidos'; }
-        else if (diff <= ALERTA_KM){ status = 'proxima';  detalhe = diff.toFixed(0) + ' KM restantes'; }
-        else                       { status = 'ok';        detalhe = diff.toFixed(0) + ' KM restantes'; }
-
-      } else if (tipo === 'Horas' && plano.intervalo_horas > 0) {
-        const horasAtual = parseFloat(equip?.horas) || 0;
-        const ultimasH = parseFloat(plano.ultima_troca_valor) || 0;
-        const proximaH = ultimasH + parseFloat(plano.intervalo_horas);
-        const diff = proximaH - horasAtual;
-        proximaStr = proximaH.toLocaleString('pt-BR') + ' h';
-        if (diff < 0)               { status = 'vencida';  detalhe = Math.abs(diff).toFixed(0) + ' horas excedidas'; }
-        else if (diff <= ALERTA_HORAS){ status = 'proxima'; detalhe = diff.toFixed(0) + ' horas restantes'; }
-        else                         { status = 'ok';        detalhe = diff.toFixed(0) + ' horas restantes'; }
+        proxima.setDate(proxima.getDate() + intDias);
+        const diff = Math.ceil((proxima - hojeD) / 86400000);
+        const proximaStr = proxima.toLocaleDateString('pt-BR');
+        let s, d;
+        if (diff < 0) { s = 'vencida'; d = Math.abs(diff) + ' dias em atraso'; }
+        else if (diff <= ALERTA_DIAS) { s = 'proxima'; d = diff + ' dias restantes'; }
+        else { s = 'ok'; d = diff + ' dias restantes'; }
+        resultados.push({ status: s, detalhe: 'Dias: ' + d, proximaStr, criterio: 'Dias' });
       }
 
-      return { status, detalhe, proximaStr };
+      // Critério KM
+      const intKm = parseFloat(plano.intervalo_km) || 0;
+      if (intKm > 0 && equip) {
+        const kmAtual = parseFloat(equip.km) || 0;
+        const ultimaKm = parseFloat(plano.ultima_troca_km) || parseFloat(plano.ultima_troca_valor) || 0;
+        const proximaKm = ultimaKm + intKm;
+        const diff = proximaKm - kmAtual;
+        const proximaStr = proximaKm.toLocaleString('pt-BR') + ' KM';
+        let s, d;
+        if (diff < 0) { s = 'vencida'; d = Math.abs(diff).toFixed(0) + ' KM excedidos'; }
+        else if (diff <= ALERTA_KM) { s = 'proxima'; d = diff.toFixed(0) + ' KM restantes'; }
+        else { s = 'ok'; d = diff.toFixed(0) + ' KM restantes'; }
+        resultados.push({ status: s, detalhe: 'KM: ' + d, proximaStr, criterio: 'KM' });
+      }
+
+      // Critério HORAS
+      const intH = parseFloat(plano.intervalo_horas) || 0;
+      if (intH > 0 && equip) {
+        const horasAtual = parseFloat(equip.horas) || 0;
+        const ultimasH = parseFloat(plano.ultima_troca_horas) || parseFloat(plano.ultima_troca_valor) || 0;
+        const proximaH = ultimasH + intH;
+        const diff = proximaH - horasAtual;
+        const proximaStr = proximaH.toLocaleString('pt-BR') + ' h';
+        let s, d;
+        if (diff < 0) { s = 'vencida'; d = Math.abs(diff).toFixed(0) + ' horas excedidas'; }
+        else if (diff <= ALERTA_HORAS) { s = 'proxima'; d = diff.toFixed(0) + ' horas restantes'; }
+        else { s = 'ok'; d = diff.toFixed(0) + ' horas restantes'; }
+        resultados.push({ status: s, detalhe: 'Horas: ' + d, proximaStr, criterio: 'Horas' });
+      }
+
+      if (resultados.length === 0) return { status: 'sem-data', detalhe: 'Sem referência', proximaStr: '—' };
+      resultados.sort((a, b) => (ordemStatus[a.status] ?? 9) - (ordemStatus[b.status] ?? 9));
+      const pior = resultados[0];
+      return {
+        status: pior.status,
+        detalhe: resultados.map(r => r.detalhe).join(' | '),
+        proximaStr: resultados.map(r => r.proximaStr).join(' / ')
+      };
     }
 
     // ==================== INSTÂNCIAS DE GRÁFICOS ====================
@@ -1632,9 +1699,18 @@
       try {
 
       // ---- Calcular status de todos os planos ----
-      const statusPlanos = db.planos.filter(p => p.ativo !== false).map(p => {
-        const equip = db.equipamentos.find(e => e.id === p.equipamento_id);
-        return { plano: p, equip, ...calcularStatusManutencao(p, equip) };
+      const statusPlanos = [];
+      db.planos.filter(p => p.ativo !== false).forEach(p => {
+        const codigos = toArr(p.equipamentos_codigos || []);
+        if (codigos.length > 0) {
+          codigos.forEach(codigo => {
+            const equip = db.equipamentos.find(e => e.codigo === codigo);
+            statusPlanos.push({ plano: p, equip, ...calcularStatusManutencao(p, equip) });
+          });
+        } else {
+          const equip = db.equipamentos.find(e => e.id === p.equipamento_id);
+          statusPlanos.push({ plano: p, equip, ...calcularStatusManutencao(p, equip) });
+        }
       });
 
       const qtdOk      = statusPlanos.filter(s => s.status === 'ok').length;
@@ -1653,7 +1729,28 @@
       setKpi('dashOcorrencias',  qtdOcorr);
       setKpi('dashAgendadas',    qtdProxima); // compatibilidade
 
-      // ---- Popular filtro de equipamentos ----
+      // ---- Tabela de Ocorrências ----
+      const tbodyOcorr = document.getElementById('tabelaOcorrenciasDashBody');
+      if (tbodyOcorr) {
+        const ocorrOrdenadas = [...db.ocorrencias].sort((a,b) => new Date(b.data) - new Date(a.data)).slice(0,20);
+        if (ocorrOrdenadas.length === 0) {
+          tbodyOcorr.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:15px;">Sem ocorrências registradas</td></tr>';
+        } else {
+          tbodyOcorr.innerHTML = ocorrOrdenadas.map(o => {
+            const equipO = db.equipamentos.find(e => e.id === o.equipamento_id);
+            return `<tr>
+              <td>${o.data ? new Date(o.data+'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
+              <td>${o.tipo_ocorrencia || '—'}</td>
+              <td>${equipO ? equipO.nome : '—'}</td>
+              <td>${o.produto_usado || '—'}</td>
+              <td>${o.quantidade_usada || '—'}</td>
+              <td>${equipO ? (equipO.setor || '—') : '—'}</td>
+            </tr>`;
+          }).join('');
+        }
+      }
+
+            // ---- Popular filtro de equipamentos ----
       const selEquip = document.getElementById('dashFiltroEquip');
       if (selEquip) {
         const opts = ['<option value="todos">Todos os equipamentos</option>'];
@@ -1683,13 +1780,13 @@
       const tbody = document.getElementById('tabelaManutencoesBody');
       if (tbody) {
         if (rows.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999;padding:20px;">Nenhum registro encontrado</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#999;padding:20px;">Nenhum registro encontrado</td></tr>';
         } else {
           tbody.innerHTML = rows.map(r => `
             <tr>
               <td><strong>${r.equip?.nome || '—'}</strong><br><small style="color:#888">${r.equip?.tipo || ''}</small></td>
+              <td style="font-size:0.82rem;">${r.equip?.km ? r.equip.km + ' km' : ''}${r.equip?.km && r.equip?.horas ? ' / ' : ''}${r.equip?.horas ? r.equip.horas + ' h' : ''}${!r.equip?.km && !r.equip?.horas ? '—' : ''}</td>
               <td>${r.plano.nome}</td>
-              <td>${r.plano.tipo_intervalo || '—'}</td>
               <td>${r.plano.ultima_troca_data ? new Date(r.plano.ultima_troca_data+'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
               <td>${r.proximaStr}</td>
               <td style="font-size:0.78rem;color:#555">${r.detalhe}</td>
@@ -1751,11 +1848,12 @@
       // Temporal — últimos 6 meses: agendamentos concluídos + ocorrências resolvidas
       const meses = [];
       const mesesLabel = [];
-      const hoje = new Date();
-      for (let i = 5; i >= 0; i--) {
-        const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
-        meses.push({ ano: d.getFullYear(), mes: d.getMonth() });
-        mesesLabel.push(d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }));
+      const agora = new Date();
+      const anoAtual = agora.getFullYear();
+      const mesAtual = agora.getMonth();
+      for (let m = 0; m <= mesAtual; m++) {
+        meses.push({ ano: anoAtual, mes: m });
+        mesesLabel.push(new Date(anoAtual, m, 1).toLocaleDateString('pt-BR', { month: 'short' }));
       }
 
       const concluidas = meses.map(m => db.agendamentos.filter(a => {
@@ -1807,7 +1905,145 @@
     }
 
 
-    function atualizarDataHoje() {
+    // ==================== SERVIÇOS ====================
+    function mostrarSubTab(qual) {
+      document.getElementById('subAgend').style.display = qual === 'agend' ? '' : 'none';
+      document.getElementById('subServ').style.display  = qual === 'serv'  ? '' : 'none';
+      document.getElementById('subTabAgend').style.cssText = qual==='agend'?'background:#367C2B;color:#fff;font-weight:700;':'';
+      document.getElementById('subTabServ').style.cssText  = qual==='serv' ?'background:#367C2B;color:#fff;font-weight:700;':'';
+    }
+
+    function novoServico() {
+      if (currentUser.perfil === 'visualizador') { alert('Sem permissão'); return; }
+      document.getElementById('serviId').value = '';
+      document.getElementById('serviExecutante').value = '';
+      document.getElementById('serviNumOs').value = '';
+      document.getElementById('serviTipoMedidor').value = '';
+      document.getElementById('serviValorMedidor').value = '';
+      document.getElementById('serviDataExecucao').value = new Date().toISOString().split('T')[0];
+      document.getElementById('serviObs').value = '';
+      preencherSelectEquipamentos('serviEquipamento');
+      filtrarPlanosServico();
+      new bootstrap.Modal(document.getElementById('modalServico')).show();
+    }
+
+    function filtrarPlanosServico() {
+      const equipId = document.getElementById('serviEquipamento').value;
+      const sel = document.getElementById('serviPlano');
+      const equip = db.equipamentos.find(e => e.id === equipId);
+      const planosVisiveis = db.planos.filter(p => {
+        if (!equipId) return true;
+        const codigos = toArr(p.equipamentos_codigos || []);
+        if (codigos.length > 0) return equip && codigos.includes(equip.codigo);
+        return p.equipamento_id === equipId;
+      });
+      sel.innerHTML = '<option value="">Selecione um plano</option>' +
+        planosVisiveis.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
+    }
+
+    function salvarServico() {
+      const id = document.getElementById('serviId').value || uid();
+      const equipId = document.getElementById('serviEquipamento').value;
+      const planoId = document.getElementById('serviPlano').value;
+      const tipo = document.getElementById('serviTipoMedidor').value;
+      const valor = parseFloat(document.getElementById('serviValorMedidor').value) || 0;
+      const dataExec = document.getElementById('serviDataExecucao').value;
+      if (!equipId || !planoId || !dataExec || !document.getElementById('serviExecutante').value) {
+        alert('Preencha todos os campos obrigatórios'); return;
+      }
+      const serv = {
+        id, equipamento_id: equipId, plano_id: planoId,
+        numero_os: document.getElementById('serviNumOs').value,
+        executante: document.getElementById('serviExecutante').value,
+        tipo_medidor: tipo, valor_medidor: valor,
+        data_execucao: dataExec,
+        obs: document.getElementById('serviObs').value
+      };
+      const idx = db.servicos.findIndex(s => s.id === id);
+      if (idx >= 0) db.servicos[idx] = serv; else db.servicos.push(serv);
+      // Atualizar equipamento
+      const equip = db.equipamentos.find(e => e.id === equipId);
+      if (equip && valor > 0) {
+        if (tipo === 'KM') { equip.km = valor; equip.dataKm = dataExec; }
+        if (tipo === 'Horas') { equip.horas = valor; equip.dataHoras = dataExec; }
+      }
+      // Atualizar plano (última troca)
+      const plano = db.planos.find(p => p.id === planoId);
+      if (plano) {
+        plano.ultima_troca_data = dataExec;
+        if (tipo === 'KM') plano.ultima_troca_km = valor;
+        if (tipo === 'Horas') plano.ultima_troca_horas = valor;
+        if (valor > 0) plano.ultima_troca_valor = valor;
+      }
+      // Criar leitura automática
+      if (valor > 0 && tipo) {
+        db.leituras.push({ id: uid(), equipamento_id: equipId, data: dataExec,
+          km: tipo==='KM'?valor:0, horas: tipo==='Horas'?valor:0, obs: 'Auto: OS '+serv.numero_os });
+      }
+      salvarDb();
+      renderServicos();
+      atualizarDashboard();
+      bootstrap.Modal.getInstance(document.getElementById('modalServico')).hide();
+      alert('Serviço finalizado! Próxima manutenção atualizada automaticamente.');
+    }
+
+    function editarServico(id) {
+      if (currentUser.perfil === 'visualizador') { alert('Sem permissão'); return; }
+      const s = db.servicos.find(x => x.id === id);
+      if (!s) return;
+      document.getElementById('serviId').value = s.id;
+      document.getElementById('serviNumOs').value = s.numero_os || '';
+      document.getElementById('serviExecutante').value = s.executante || '';
+      document.getElementById('serviTipoMedidor').value = s.tipo_medidor || '';
+      document.getElementById('serviValorMedidor').value = s.valor_medidor || '';
+      document.getElementById('serviDataExecucao').value = s.data_execucao || '';
+      document.getElementById('serviObs').value = s.obs || '';
+      preencherSelectEquipamentos('serviEquipamento');
+      document.getElementById('serviEquipamento').value = s.equipamento_id;
+      filtrarPlanosServico();
+      document.getElementById('serviPlano').value = s.plano_id;
+      new bootstrap.Modal(document.getElementById('modalServico')).show();
+    }
+
+    function deletarServico(id) {
+      if (currentUser.perfil === 'visualizador') { alert('Sem permissão'); return; }
+      if (confirm('Deletar este serviço?')) {
+        db.servicos = db.servicos.filter(s => s.id !== id);
+        salvarDb(); renderServicos();
+      }
+    }
+
+    function renderServicos() {
+      const container = document.getElementById('containerServicos');
+      if (!container) return;
+      if (!db.servicos || db.servicos.length === 0) {
+        container.innerHTML = '<p class="text-muted">Nenhum serviço registrado</p>'; return;
+      }
+      const sorted = [...db.servicos].sort((a,b) => new Date(b.data_execucao) - new Date(a.data_execucao));
+      const canEdit = currentUser.perfil !== 'visualizador';
+      container.innerHTML = sorted.map(s => {
+        const equip = db.equipamentos.find(e => e.id === s.equipamento_id);
+        const plano = db.planos.find(p => p.id === s.plano_id);
+        return `<div class="card-equip">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h5 class="card-title"><i class="fas fa-wrench me-2"></i>${plano ? plano.nome : 'Plano removido'}</h5>
+              <div class="card-meta">Data: <strong>${s.data_execucao ? new Date(s.data_execucao+'T00:00:00').toLocaleDateString('pt-BR') : '—'}</strong></div>
+              <div class="card-meta">Equipamento: <strong>${equip ? equip.nome : '—'}</strong></div>
+              <div class="card-meta">OS: <strong>${s.numero_os || '—'}</strong></div>
+              <div class="card-meta">Executante: <strong>${s.executante || '—'}</strong></div>
+              ${s.valor_medidor ? `<div class="card-meta">${s.tipo_medidor}: <strong>${s.valor_medidor}</strong></div>` : ''}
+            </div>
+            <div class="d-flex gap-2">${canEdit ? `
+              <button class="btn btn-sm btn-primary" onclick="editarServico('${s.id}')"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-sm btn-danger" onclick="deletarServico('${s.id}')"><i class="fas fa-trash"></i></button>` : ''}
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+        function atualizarDataHoje() {
       const hoje = new Date().toLocaleDateString('pt-BR');
       const el = document.getElementById('navDataHoje');
       if (el) el.textContent = hoje;
@@ -1945,9 +2181,9 @@
         return;
       }
       document.getElementById('planoId').value = '';
-      document.getElementById('planoEquipamento').value = '';
+      document.getElementById('planoCodigo').value = '';
+      document.getElementById('planoEquipamentosJson').value = '[]';
       document.getElementById('planoNome').value = '';
-      document.getElementById('planoTipoIntervalo').value = '';
       document.getElementById('planoIntervaloDias').value = '';
       document.getElementById('planoIntervaloKm').value = '';
       document.getElementById('planoIntervaloHoras').value = '';
@@ -1960,7 +2196,7 @@
       document.getElementById('planoUltimaTrocaTipo').value = '';
       document.getElementById('planoAtivo').checked = true;
       
-      preencherSelectEquipamentos('planoEquipamento');
+      renderPlanosCodigos();
       new bootstrap.Modal(document.getElementById('modalPlano')).show();
     }
 
@@ -1968,9 +2204,9 @@
       const id = document.getElementById('planoId').value || uid();
       const plano = {
         id,
-        equipamento_id: document.getElementById('planoEquipamento').value,
+        equipamento_id: document.getElementById('planoEquipamento') ? document.getElementById('planoEquipamento').value : '',
+        equipamentos_codigos: JSON.parse(document.getElementById('planoEquipamentosJson')?.value || '[]'),
         nome: document.getElementById('planoNome').value,
-        tipo_intervalo: document.getElementById('planoTipoIntervalo').value,
         intervalo_dias: document.getElementById('planoIntervaloDias').value || 0,
         intervalo_km: document.getElementById('planoIntervaloKm').value || 0,
         intervalo_horas: document.getElementById('planoIntervaloHoras').value || 0,
@@ -1980,6 +2216,8 @@
         ultima_troca_data: document.getElementById('planoUltimaTrocaData').value,
         ultima_troca_tipo: document.getElementById('planoUltimaTrocaTipo').value,
         ultima_troca_valor: document.getElementById('planoUltimaTrocaValor').value || 0,
+        ultima_troca_km: document.getElementById('planoUltimaTrocaKm')?.value || 0,
+        ultima_troca_horas: document.getElementById('planoUltimaTrocaHoras')?.value || 0,
         ativo: document.getElementById('planoAtivo').checked
       };
       
@@ -2006,7 +2244,6 @@
       document.getElementById('planoId').value = plano.id;
       document.getElementById('planoEquipamento').value = plano.equipamento_id;
       document.getElementById('planoNome').value = plano.nome;
-      document.getElementById('planoTipoIntervalo').value = plano.tipo_intervalo;
       document.getElementById('planoIntervaloDias').value = plano.intervalo_dias;
       document.getElementById('planoIntervaloKm').value = plano.intervalo_km;
       document.getElementById('planoIntervaloHoras').value = plano.intervalo_horas;
@@ -2016,9 +2253,13 @@
       document.getElementById('planoUltimaTrocaData').value = plano.ultima_troca_data || '';
       document.getElementById('planoUltimaTrocaTipo').value = plano.ultima_troca_tipo || '';
       document.getElementById('planoUltimaTrocaValor').value = plano.ultima_troca_valor || '';
+      document.getElementById('planoUltimaTrocaKm').value = plano.ultima_troca_km || '';
+      document.getElementById('planoUltimaTrocaHoras').value = plano.ultima_troca_horas || '';
       document.getElementById('planoAtivo').checked = plano.ativo !== false;
       
-      preencherSelectEquipamentos('planoEquipamento');
+      const codigos = plano.equipamentos_codigos || (plano.equipamento_id ? [] : []);
+      document.getElementById('planoEquipamentosJson').value = JSON.stringify(codigos);
+      renderPlanosCodigos();
       new bootstrap.Modal(document.getElementById('modalPlano')).show();
     }
 
@@ -2054,8 +2295,11 @@
           <div class="d-flex justify-content-between align-items-start">
             <div style="flex: 1;">
               <h5 class="card-title">${plano.nome}</h5>
-              <div class="card-meta">Equipamento: <strong>${equip ? equip.nome : '-'}</strong></div>
-              <div class="card-meta">Tipo: <strong>${plano.tipo_intervalo}</strong></div>
+              <div class="card-meta">Equipamentos: <strong>${
+                (plano.equipamentos_codigos && plano.equipamentos_codigos.length > 0)
+                  ? plano.equipamentos_codigos.map(c => { const e = db.equipamentos.find(eq=>eq.codigo===c); return e?e.nome:c; }).join(', ')
+                  : (equip ? equip.nome : '—')
+              }</strong></div>
               <div class="card-meta">Intervalo: 
                 <strong>${plano.intervalo_dias ? plano.intervalo_dias + ' dias' : ''}
                 ${plano.intervalo_dias && (plano.intervalo_km || plano.intervalo_horas) ? ' / ' : ''}
@@ -2405,10 +2649,40 @@
       
       container.innerHTML = '';
       
+      // Equipamentos summary grid
+      const grid = document.createElement('div');
+      grid.className = 'row g-2 mb-4';
+      grid.id = 'leituraEquipGrid';
+      
+      if (db.equipamentos.length > 0) {
+        grid.innerHTML = '<h5 class="col-12">Valores Atuais dos Equipamentos</h5>' +
+          db.equipamentos.filter(e => e.status === 'Ativo').map(e => `
+            <div class="col-md-6 col-lg-4">
+              <div class="card-equip" style="padding:12px;">
+                <div style="font-weight:700;margin-bottom:8px;">${e.nome}</div>
+                <div style="display:flex;gap:12px;font-size:0.9rem;">
+                  <div><span style="color:#888;">KM:</span> <strong>${e.km || '0'}</strong> <button class="btn btn-xs" onclick="novaLeitura('${e.id}','KM')" style="padding:2px 6px;font-size:0.75rem;margin-left:4px;">+</button></div>
+                  <div><span style="color:#888;">Horas:</span> <strong>${e.horas || '0'}</strong> <button class="btn btn-xs" onclick="novaLeitura('${e.id}','Horas')" style="padding:2px 6px;font-size:0.75rem;margin-left:4px;">+</button></div>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        container.appendChild(grid);
+      }
+      
+      // Histórico de leituras
       if (db.leituras.length === 0) {
-        container.innerHTML = '<p class="text-muted">Nenhuma leitura cadastrada</p>';
+        const p = document.createElement('p');
+        p.className = 'text-muted';
+        p.textContent = 'Nenhuma leitura cadastrada';
+        container.appendChild(p);
         return;
       }
+      
+      const histTitle = document.createElement('h5');
+      histTitle.textContent = 'Histórico de Leituras';
+      histTitle.style.marginTop = '20px';
+      container.appendChild(histTitle);
       
       db.leituras.sort((a, b) => new Date(b.data) - new Date(a.data));
       
@@ -2575,6 +2849,7 @@
       db.agendamentos = toArr(db.agendamentos);
       db.ocorrencias  = toArr(db.ocorrencias);
       db.leituras     = toArr(db.leituras);
+      db.servicos     = toArr(db.servicos);
       if (!db.usuarios) db.usuarios = [];
     }
 
@@ -2609,6 +2884,10 @@
       firebaseDb.ref(path + 'leituras').on('value', snap => {
         db.leituras = toArr(snap.val());
         renderLeituras();
+      });
+      firebaseDb.ref(path + 'servicos').on('value', snap => {
+        db.servicos = toArr(snap.val());
+        if (typeof renderServicos === 'function') renderServicos();
       });
     }
 
