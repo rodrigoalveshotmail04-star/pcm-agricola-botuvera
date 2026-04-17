@@ -544,6 +544,11 @@
             <i class="fas fa-plus me-2"></i>Novo Equipamento
           </button>
         </div>
+        <div class="mb-3">
+          <input type="text" id="equipPesquisa" class="form-control"
+            placeholder="🔍 Buscar por código, nome, tipo, setor, placa..."
+            oninput="renderEquipamentos()" />
+        </div>
         <div id="containerEquipamentos"></div>
       </div>
 
@@ -554,6 +559,11 @@
           <button class="btn btn-primary" style="background: #FFDE00 !important; color: #1A1A1A !important; font-weight: 700; border: none;" onclick="novoPlano()">
             <i class="fas fa-plus me-2"></i>Novo Plano
           </button>
+        </div>
+        <div class="mb-3">
+          <input type="text" id="planosPesquisa" class="form-control"
+            placeholder="🔍 Buscar por equipamento, código, tipo, setor..."
+            oninput="renderPlanos()" />
         </div>
         <div id="containerPlanos"></div>
       </div>
@@ -862,6 +872,9 @@
           <input type="hidden" id="ocorId" />
           
           <label class="form-label">Equipamento *</label>
+          <input type="text" class="form-control mb-1" id="ocorEquipSearch"
+            placeholder="🔍 Buscar por código ou nome..."
+            oninput="filtrarSelectEquip('ocorEquipSearch','ocorEquipamento')" />
           <select class="form-select" id="ocorEquipamento" required>
             <option value="">Selecione um equipamento</option>
           </select>
@@ -961,6 +974,9 @@
         <div class="modal-body">
           <input type="hidden" id="serviId" />
           <label class="form-label">Equipamento *</label>
+          <input type="text" class="form-control mb-1" id="serviEquipSearch"
+            placeholder="🔍 Buscar por código ou nome..."
+            oninput="filtrarSelectEquip('serviEquipSearch','serviEquipamento')" />
           <select class="form-select" id="serviEquipamento" required onchange="filtrarPlanosServico()">
             <option value="">Selecione um equipamento</option>
           </select>
@@ -1882,12 +1898,24 @@
       
       container.innerHTML = '';
       
-      if (db.equipamentos.length === 0) {
-        container.innerHTML = '<p class="text-muted">Nenhum equipamento cadastrado</p>';
+      const q = (document.getElementById('equipPesquisa')?.value || '').trim().toLowerCase();
+      let lista = db.equipamentos;
+      if (q) {
+        lista = lista.filter(equip =>
+          (equip.codigo || '').toLowerCase().includes(q) ||
+          equip.nome.toLowerCase().includes(q) ||
+          (equip.tipo || '').toLowerCase().includes(q) ||
+          (equip.setor || '').toLowerCase().includes(q) ||
+          (equip.placa || '').toLowerCase().includes(q)
+        );
+      }
+      
+      if (lista.length === 0) {
+        container.innerHTML = '<p class="text-muted">Nenhum equipamento encontrado</p>';
         return;
       }
       
-      db.equipamentos.forEach(equip => {
+      lista.forEach(equip => {
         const canEdit = currentUser.perfil !== 'visualizador';
         const card = document.createElement('div');
         card.className = 'card-equip';
@@ -2016,12 +2044,37 @@
       
       container.innerHTML = '';
       
-      if (db.planos.length === 0) {
-        container.innerHTML = '<p class="text-muted">Nenhum plano cadastrado</p>';
+      const q = (document.getElementById('planosPesquisa')?.value || '').trim().toLowerCase();
+      let lista = db.planos;
+      if (q) {
+        lista = lista.filter(plano => {
+          if (plano.nome.toLowerCase().includes(q)) return true;
+          if (plano.equipamentos_codigos && plano.equipamentos_codigos.length > 0) {
+            return plano.equipamentos_codigos.some(c => {
+              if (c.toLowerCase().includes(q)) return true;
+              const e = db.equipamentos.find(eq => eq.codigo === c);
+              if (!e) return false;
+              return (e.codigo || '').toLowerCase().includes(q) ||
+                     e.nome.toLowerCase().includes(q) ||
+                     (e.tipo || '').toLowerCase().includes(q) ||
+                     (e.setor || '').toLowerCase().includes(q);
+            });
+          }
+          const equip = db.equipamentos.find(e => e.id === plano.equipamento_id);
+          if (!equip) return false;
+          return (equip.codigo || '').toLowerCase().includes(q) ||
+                 equip.nome.toLowerCase().includes(q) ||
+                 (equip.tipo || '').toLowerCase().includes(q) ||
+                 (equip.setor || '').toLowerCase().includes(q);
+        });
+      }
+      
+      if (lista.length === 0) {
+        container.innerHTML = '<p class="text-muted">Nenhum plano encontrado</p>';
         return;
       }
       
-      db.planos.forEach(plano => {
+      lista.forEach(plano => {
         const equip = db.equipamentos.find(e => e.id === plano.equipamento_id);
         const canEdit = currentUser.perfil !== 'visualizador';
         const card = document.createElement('div');
@@ -2565,9 +2618,31 @@
       db.equipamentos.forEach(e => {
         const option = document.createElement('option');
         option.value = e.id;
-        option.textContent = e.nome;
+        option.textContent = e.codigo ? `[${e.codigo}] ${e.nome}` : e.nome;
         select.appendChild(option);
       });
+    }
+
+    function filtrarSelectEquip(inputId, selectId) {
+      const q = (document.getElementById(inputId)?.value || '').trim().toLowerCase();
+      const select = document.getElementById(selectId);
+      const curVal = select.value;
+      select.innerHTML = '<option value="">Selecione um equipamento</option>';
+      db.equipamentos
+        .filter(e => !q ||
+          (e.codigo || '').toLowerCase().includes(q) ||
+          e.nome.toLowerCase().includes(q) ||
+          (e.setor || '').toLowerCase().includes(q) ||
+          (e.tipo || '').toLowerCase().includes(q) ||
+          (e.placa || '').toLowerCase().includes(q)
+        )
+        .forEach(e => {
+          const option = document.createElement('option');
+          option.value = e.id;
+          option.textContent = e.codigo ? `[${e.codigo}] ${e.nome}` : e.nome;
+          if (e.id === curVal) option.selected = true;
+          select.appendChild(option);
+        });
     }
 
     // Converte valor do Firebase (objeto ou array) para array JS
