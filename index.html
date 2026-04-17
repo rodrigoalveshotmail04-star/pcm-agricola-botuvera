@@ -424,7 +424,7 @@
             </div>
           </div>
           <div class="dash-chart-box">
-            <h4><i class="fas fa-chart-bar"></i>Situação por Tipo</h4>
+            <h4><i class="fas fa-grip-lines-vertical"></i>Situação por Tipo</h4>
             <div class="chart-canvas-wrap">
               <canvas id="chartBarras"></canvas>
             </div>
@@ -490,7 +490,7 @@
               <thead>
                 <tr>
                   <th>Equipamento</th>
-                  <th>Tipo</th>
+                  <th>Setor</th>
                   <th>Controle</th>
                   <th>Plano de Manutenção</th>
                   <th>Última Troca</th>
@@ -1368,11 +1368,12 @@
             else if (tc === 'Data')      controle = 'Por data';
             else                         controle = '—';
             const codBem = r.equip?.codigo ? `<small style="color:#888;font-size:0.75rem;">Cód: ${r.equip.codigo}</small><br>` : '';
-            const tipoEquip = r.equip?.tipo || '—';
+            const tipoEquip = r.equip?.tipo ? `<br><small style="color:#666;font-size:0.75rem;">${r.equip.tipo}</small>` : '';
+            const setorEquip = r.equip?.setor || '—';
             return `
             <tr>
-              <td>${codBem}<strong>${r.equip?.nome || '—'}</strong></td>
-              <td style="font-size:0.82rem;">${tipoEquip}</td>
+              <td>${codBem}<strong>${r.equip?.nome || '—'}</strong>${tipoEquip}</td>
+              <td style="font-size:0.82rem;">${setorEquip}</td>
               <td style="font-size:0.82rem;">${controle}</td>
               <td>${r.plano.nome}</td>
               <td>${r.plano.ultima_troca_data ? new Date(r.plano.ultima_troca_data+'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
@@ -1419,17 +1420,24 @@
         _chartBarras = new Chart(ctxB, {
           type: 'bar',
           data: {
-            labels: shortTipos,
+            labels: tiposEquip,
             datasets: [
-              { label: 'Em Dia',   data: barOk,      backgroundColor: cores.ok },
-              { label: 'Próximas', data: barProxima,  backgroundColor: cores.proxima },
-              { label: 'Vencidas', data: barVencida,  backgroundColor: cores.vencida }
+              { label: 'Em Dia',   data: barOk,      backgroundColor: cores.ok,      borderRadius: 3 },
+              { label: 'Próximas', data: barProxima,  backgroundColor: cores.proxima,  borderRadius: 3 },
+              { label: 'Vencidas', data: barVencida,  backgroundColor: cores.vencida,  borderRadius: 3 }
             ]
           },
           options: {
+            indexAxis: 'y',
             responsive: true, maintainAspectRatio: false,
-            scales: { x: { stacked: true, ticks: { font: { size: 10 } } }, y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } } },
-            plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 10 } } }
+            scales: {
+              x: { stacked: true, beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+              y: { stacked: true, ticks: { font: { size: 11 } }, grid: { display: false } }
+            },
+            plugins: {
+              legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } },
+              tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.x}` } }
+            }
           }
         });
       }
@@ -1440,6 +1448,12 @@
       const setorProxima = setores.map(s => statusPlanos.filter(p=>p.equip?.status==='Ativo' && (p.equip?.setor||'Sem Setor')===s && p.status==='proxima').length);
       const setorVencida = setores.map(s => statusPlanos.filter(p=>p.equip?.status==='Ativo' && (p.equip?.setor||'Sem Setor')===s && p.status==='vencida').length);
 
+      // Normalizar para 100% por setor
+      const setorTotais = setores.map((_,i) => (setorOk[i]||0) + (setorProxima[i]||0) + (setorVencida[i]||0));
+      const setorOkPct      = setorOk.map((v,i)      => setorTotais[i] ? parseFloat((v/setorTotais[i]*100).toFixed(1)) : 0);
+      const setorProximaPct = setorProxima.map((v,i)  => setorTotais[i] ? parseFloat((v/setorTotais[i]*100).toFixed(1)) : 0);
+      const setorVencidaPct = setorVencida.map((v,i)  => setorTotais[i] ? parseFloat((v/setorTotais[i]*100).toFixed(1)) : 0);
+
       const ctxSetor = document.getElementById('chartSetor');
       if (ctxSetor) {
         _chartSetor = new Chart(ctxSetor, {
@@ -1447,15 +1461,30 @@
           data: {
             labels: setores,
             datasets: [
-              { label: 'Em Dia',   data: setorOk,      backgroundColor: cores.ok },
-              { label: 'Próximas', data: setorProxima,  backgroundColor: cores.proxima },
-              { label: 'Vencidas', data: setorVencida,  backgroundColor: cores.vencida }
+              { label: 'Em Dia',   data: setorOkPct,      backgroundColor: cores.ok,      borderRadius: 0 },
+              { label: 'Próximas', data: setorProximaPct,  backgroundColor: cores.proxima,  borderRadius: 0 },
+              { label: 'Vencidas', data: setorVencidaPct,  backgroundColor: cores.vencida,  borderRadius: 0 }
             ]
           },
           options: {
+            indexAxis: 'y',
             responsive: true, maintainAspectRatio: false,
-            scales: { x: { stacked: true, ticks: { font: { size: 11 } } }, y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } } },
-            plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 10 } } }
+            scales: {
+              x: { stacked: true, min: 0, max: 100, ticks: { callback: v => v+'%', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+              y: { stacked: true, ticks: { font: { size: 11 } }, grid: { display: false } }
+            },
+            plugins: {
+              legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } },
+              tooltip: {
+                callbacks: {
+                  label: ctx => {
+                    const i = ctx.dataIndex;
+                    const abs = [setorOk[i], setorProxima[i], setorVencida[i]][ctx.datasetIndex];
+                    return ` ${ctx.dataset.label}: ${ctx.parsed.x}% (${abs} planos)`;
+                  }
+                }
+              }
+            }
           }
         });
       }
