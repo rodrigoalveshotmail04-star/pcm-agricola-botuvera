@@ -1368,11 +1368,11 @@
             else if (tc === 'Data')      controle = 'Por data';
             else                         controle = '—';
             const codBem = r.equip?.codigo ? `<small style="color:#888;font-size:0.75rem;">Cód: ${r.equip.codigo}</small><br>` : '';
-            const tipo = r.equip?.tipo || '—';
+            const tipoEquip = r.equip?.tipo || '—';
             return `
             <tr>
               <td>${codBem}<strong>${r.equip?.nome || '—'}</strong></td>
-              <td style="font-size:0.82rem;">${tipo}</td>
+              <td style="font-size:0.82rem;">${tipoEquip}</td>
               <td style="font-size:0.82rem;">${controle}</td>
               <td>${r.plano.nome}</td>
               <td>${r.plano.ultima_troca_data ? new Date(r.plano.ultima_troca_data+'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
@@ -1408,7 +1408,7 @@
       }
 
       // Barras por tipo de equipamento
-      const tiposEquip = [...new Set(db.equipamentos.filter(e=>e.status==='Ativo').map(e=>e.tipo||'Sem Tipo').filter(Boolean))];
+      const tiposEquip = [...new Set(db.equipamentos.filter(e=>e.status==='Ativo').map(e=>e.tipo||'Sem Tipo'))];
       const barOk      = tiposEquip.map(t => statusPlanos.filter(s=>s.equip?.status==='Ativo' && (s.equip?.tipo||'Sem Tipo')===t && s.status==='ok').length);
       const barProxima = tiposEquip.map(t => statusPlanos.filter(s=>s.equip?.status==='Ativo' && (s.equip?.tipo||'Sem Tipo')===t && s.status==='proxima').length);
       const barVencida = tiposEquip.map(t => statusPlanos.filter(s=>s.equip?.status==='Ativo' && (s.equip?.tipo||'Sem Tipo')===t && s.status==='vencida').length);
@@ -1435,7 +1435,7 @@
       }
 
       // Barras por setor
-      const setores = [...new Set(db.equipamentos.filter(e=>e.status==='Ativo').map(e=>e.setor||'Sem Setor').filter(Boolean))];
+      const setores = [...new Set(db.equipamentos.filter(e=>e.status==='Ativo').map(e=>e.setor||'Sem Setor'))];
       const setorOk      = setores.map(s => statusPlanos.filter(p=>p.equip?.status==='Ativo' && (p.equip?.setor||'Sem Setor')===s && p.status==='ok').length);
       const setorProxima = setores.map(s => statusPlanos.filter(p=>p.equip?.status==='Ativo' && (p.equip?.setor||'Sem Setor')===s && p.status==='proxima').length);
       const setorVencida = setores.map(s => statusPlanos.filter(p=>p.equip?.status==='Ativo' && (p.equip?.setor||'Sem Setor')===s && p.status==='vencida').length);
@@ -2472,4 +2472,63 @@
       const path = `/pcm/${currentUser.id}/`;
 
       firebaseDb.ref(path + 'equipamentos').on('value', snap => {
-        db.equipamentos = toArr(sna
+        db.equipamentos = toArr(snap.val());
+        renderEquipamentos();
+        atualizarDashboard();
+      });
+
+      firebaseDb.ref(path + 'planos').on('value', snap => {
+        db.planos = toArr(snap.val());
+        renderPlanos();
+        atualizarDashboard();
+      });
+
+      firebaseDb.ref(path + 'agendamentos').on('value', snap => {
+        db.agendamentos = toArr(snap.val());
+        renderAgendamentos();
+        atualizarDashboard();
+      });
+
+      firebaseDb.ref(path + 'ocorrencias').on('value', snap => {
+        db.ocorrencias = toArr(snap.val());
+        renderOcorrencias();
+        atualizarDashboard();
+      });
+
+      firebaseDb.ref(path + 'leituras').on('value', snap => {
+        db.leituras = toArr(snap.val());
+        renderLeituras();
+      });
+      firebaseDb.ref(path + 'servicos').on('value', snap => {
+        db.servicos = toArr(snap.val());
+        if (typeof renderServicos === 'function') renderServicos();
+      });
+    }
+
+    function importExcel() {
+      alert('Funcionalidade de importação em desenvolvimento');
+    }
+
+    function exportExcel() {
+      alert('Funcionalidade de exportação em desenvolvimento');
+    }
+
+    // ==================== INITIALIZATION ====================
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sempre exige login ao abrir/recarregar o sistema — sem restauração de sessão
+      localStorage.removeItem('currentUser');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('mainApp').style.display = 'none';
+      document.getElementById('homeScreen').style.display = 'none';
+      
+      atualizarDataHoje();
+      setInterval(atualizarDataHoje, 1000);
+      
+      // Esconder splash após 2.5 segundos
+      setTimeout(() => {
+        document.getElementById('splashScreen').classList.add('hidden');
+      }, 2500);
+    });
+  </script>
+</body>
+</html>
