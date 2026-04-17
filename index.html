@@ -153,6 +153,25 @@
     .card-meta { color: var(--cinza-escuro); font-size: 0.88rem; margin-bottom: 6px; }
     .card-meta strong { color: var(--texto-principal); font-weight: 600; }
 
+
+    /* KPI Insights */
+    .kpi-insight { font-size:0.72rem; color: rgba(255,255,255,0.65); margin-top:4px; line-height:1.4; }
+    .kpi-insight strong { color:rgba(255,255,255,0.9); }
+    /* Search bar */
+    .dash-search-input {
+      flex:1; min-width:200px; padding:7px 12px; border:1.5px solid var(--borda-sutil);
+      border-radius:6px; font-size:0.88rem; outline:none; background:#fff;
+      transition:border-color .2s;
+    }
+    .dash-search-input:focus { border-color: var(--verde-principal); box-shadow:0 0 0 3px rgba(54,124,43,.1); }
+    /* Equip Popover */
+    #equipPopover {
+      display:none; position:fixed; z-index:9500; pointer-events:none;
+      width:360px; background:#1e293b; color:#e2e8f0;
+      border-radius:12px; box-shadow:0 12px 40px rgba(0,0,0,.5);
+      overflow:hidden; transition:opacity .12s;
+    }
+
     /* KPIs */
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 22px; }
     .kpi-card {
@@ -392,26 +411,36 @@
             <div class="kpi-label"><i class="fas fa-tractor me-1"></i>Equipamentos</div>
             <div class="kpi-value" id="dashEquipamentos">0</div>
             <div class="kpi-sub">ativos</div>
+            <div class="kpi-insight" id="kpiEquipInsight1">— inativos · — em manutenção</div>
+            <div class="kpi-insight" id="kpiEquipInsight2">Frota ativa: —%</div>
           </div>
           <div class="kpi-card kpi-verde">
             <div class="kpi-label"><i class="fas fa-check-circle me-1"></i>Em Dia</div>
             <div class="kpi-value" id="dashEmDia">0</div>
-            <div class="kpi-sub">manutenções ok</div>
+            <div class="kpi-sub">planos em conformidade</div>
+            <div class="kpi-insight" id="kpiEmDiaInsight1">—% do total de planos</div>
+            <div class="kpi-insight" id="kpiEmDiaInsight2">— equipamentos 100% ok</div>
           </div>
           <div class="kpi-card kpi-amarelo">
             <div class="kpi-label"><i class="fas fa-clock me-1"></i>Próximas</div>
             <div class="kpi-value" id="dashProximas">0</div>
-            <div class="kpi-sub">vence em 7 dias / 500 km / 20h</div>
+            <div class="kpi-sub">vencimento em até 7d/500km/20h</div>
+            <div class="kpi-insight" id="kpiProxInsight1">— equipamentos em alerta</div>
+            <div class="kpi-insight" id="kpiProxInsight2" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">Mais crítico: —</div>
           </div>
           <div class="kpi-card kpi-vermelho">
             <div class="kpi-label"><i class="fas fa-exclamation-triangle me-1"></i>Vencidas</div>
             <div class="kpi-value" id="dashVencidas">0</div>
-            <div class="kpi-sub">requerem atenção</div>
+            <div class="kpi-sub">requerem atenção imediata</div>
+            <div class="kpi-insight" id="kpiVencInsight1">— equipamentos afetados</div>
+            <div class="kpi-insight" id="kpiVencInsight2" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">Mais crítico: —</div>
           </div>
           <div class="kpi-card kpi-laranja">
             <div class="kpi-label"><i class="fas fa-bolt me-1"></i>Ocorrências</div>
             <div class="kpi-value" id="dashOcorrencias">0</div>
             <div class="kpi-sub">em andamento</div>
+            <div class="kpi-insight" id="kpiOcorrInsight1">— resolvidas este mês</div>
+            <div class="kpi-insight" id="kpiOcorrInsight2">— abertas este mês</div>
           </div>
         </div>
 
@@ -484,6 +513,9 @@
             <select id="dashFiltroEquip" onchange="atualizarDashboard()">
               <option value="todos">Todos os equipamentos</option>
             </select>
+            <input type="text" id="dashPesquisa" class="dash-search-input"
+              placeholder="🔍 Pesquisar por nome, código, setor, tipo, placa..."
+              oninput="atualizarDashboard()" />
           </div>
           <div style="overflow-x:auto;">
             <table id="tabelaManutencoes">
@@ -682,6 +714,13 @@
           
           <label class="form-label">Observações</label>
           <textarea class="form-control" id="equipObs"></textarea>
+
+          <label class="form-label mt-3">Foto do Equipamento</label>
+          <div id="equipImagemPreview" style="background:#f8f8f8;border:1.5px dashed #ccc;border-radius:6px;min-height:60px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;overflow:hidden;">
+            <span style="color:#aaa;font-size:0.8rem;">Nenhuma imagem selecionada</span>
+          </div>
+          <input type="file" class="form-control" id="equipImagemFile" accept="image/*" onchange="processarImagemEquip(this)" />
+          <small class="text-muted">Imagem exibida ao passar o cursor sobre o equipamento na tabela.</small>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -1257,6 +1296,8 @@
 
     // ==================== INSTÂNCIAS DE GRÁFICOS ====================
     let _chartPizza = null, _chartBarras = null, _chartTemporal = null, _chartSetor = null;
+    let _statusPlanosGlobal = [];
+    let _equipImagemPendente = null;
 
     function destruirGraficos() {
       if (_chartPizza)    { _chartPizza.destroy();    _chartPizza = null; }
@@ -1297,15 +1338,57 @@
       const qtdSemData = statusPlanos.filter(s => s.status === 'sem-data').length;
       const qtdOcorr   = db.ocorrencias.filter(o => o.status === 'Em andamento').length;
 
+      // ---- Salvar globalmente para o popover ----
+      _statusPlanosGlobal = statusPlanos;
+
       // ---- KPIs ----
       const setKpi = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
-      setKpi('dashEquipamentos', db.equipamentos.filter(e => e.status === 'Ativo').length);
+      const setIns = (id, html) => { const e = document.getElementById(id); if(e) e.innerHTML = html; };
+      const equipAtivos   = db.equipamentos.filter(e => e.status === 'Ativo');
+      const equipInativos  = db.equipamentos.filter(e => e.status === 'Inativo').length;
+      const equipManut     = db.equipamentos.filter(e => e.status === 'Manutenção').length;
+      const totalEquip     = db.equipamentos.length;
+      const pctAtiva       = totalEquip ? Math.round(equipAtivos.length/totalEquip*100) : 0;
+      setKpi('dashEquipamentos', equipAtivos.length);
       setKpi('dashPlanos',       db.planos.length);
       setKpi('dashEmDia',        qtdOk);
       setKpi('dashProximas',     qtdProxima);
       setKpi('dashVencidas',     qtdVencida);
       setKpi('dashOcorrencias',  qtdOcorr);
       setKpi('dashAgendadas',    qtdProxima); // compatibilidade
+
+      // KPI insights — Equipamentos
+      setIns('kpiEquipInsight1', `<strong>${equipInativos}</strong> inativo(s) · <strong>${equipManut}</strong> em manutenção`);
+      setIns('kpiEquipInsight2', `Frota ativa: <strong>${pctAtiva}%</strong>`);
+
+      // KPI insights — Em Dia
+      const totalPlanos = statusPlanos.length;
+      const pctOk = totalPlanos ? Math.round(qtdOk/totalPlanos*100) : 0;
+      const equipFullOk = equipAtivos.filter(eq => {
+        const sp = statusPlanos.filter(s => s.equip?.id === eq.id);
+        return sp.length > 0 && sp.every(s => s.status === 'ok');
+      }).length;
+      setIns('kpiEmDiaInsight1', `<strong>${pctOk}%</strong> do total de planos`);
+      setIns('kpiEmDiaInsight2', `<strong>${equipFullOk}</strong> equipamento(s) 100% ok`);
+
+      // KPI insights — Próximas
+      const equipsProx = [...new Set(statusPlanos.filter(s=>s.status==='proxima').map(s=>s.equip?.nome).filter(Boolean))];
+      const proxCritico = equipsProx[0] || '—';
+      setIns('kpiProxInsight1', `<strong>${equipsProx.length}</strong> equipamento(s) em alerta`);
+      setIns('kpiProxInsight2', `Mais crítico: <strong title="${proxCritico}">${proxCritico.length>18?proxCritico.substring(0,18)+'…':proxCritico}</strong>`);
+
+      // KPI insights — Vencidas
+      const equipsVenc = [...new Set(statusPlanos.filter(s=>s.status==='vencida').map(s=>s.equip?.nome).filter(Boolean))];
+      const vencCritico = equipsVenc[0] || '—';
+      setIns('kpiVencInsight1', `<strong>${equipsVenc.length}</strong> equipamento(s) afetado(s)`);
+      setIns('kpiVencInsight2', `Mais crítico: <strong title="${vencCritico}">${vencCritico.length>18?vencCritico.substring(0,18)+'…':vencCritico}</strong>`);
+
+      // KPI insights — Ocorrências
+      const hoje2 = new Date(); const m2 = hoje2.getMonth(), a2 = hoje2.getFullYear();
+      const ocorrMesResolvidas = db.ocorrencias.filter(o => { const d=new Date(o.data||''); return d.getMonth()===m2 && d.getFullYear()===a2 && o.status==='Resolvido'; }).length;
+      const ocorrMesAbertas    = db.ocorrencias.filter(o => { const d=new Date(o.data||''); return d.getMonth()===m2 && d.getFullYear()===a2; }).length;
+      setIns('kpiOcorrInsight1', `<strong>${ocorrMesResolvidas}</strong> resolvida(s) este mês`);
+      setIns('kpiOcorrInsight2', `<strong>${ocorrMesAbertas}</strong> registrada(s) este mês`);
 
       // ---- Tabela de Ocorrências ----
       const tbodyOcorr = document.getElementById('tabelaOcorrenciasDashBody');
@@ -1340,9 +1423,15 @@
       const filtroStatus = document.getElementById('dashFiltroStatus')?.value || 'todos';
       const filtroEquip  = document.getElementById('dashFiltroEquip')?.value  || 'todos';
 
+      const pesquisa = (document.getElementById('dashPesquisa')?.value || '').toLowerCase().trim();
       let rows = statusPlanos;
       if (filtroStatus !== 'todos') rows = rows.filter(r => r.status === filtroStatus);
       if (filtroEquip  !== 'todos') rows = rows.filter(r => r.equip?.id === filtroEquip);
+      if (pesquisa) rows = rows.filter(r => {
+        const e = r.equip;
+        return [e?.nome, e?.codigo, e?.setor, e?.tipo, e?.placa, r.plano?.nome]
+          .some(v => v && v.toString().toLowerCase().includes(pesquisa));
+      });
 
       // Ordenar: vencidas primeiro, depois proximas, ok, sem-data
       const ordem = { vencida: 0, proxima: 1, ok: 2, 'sem-data': 3 };
@@ -1371,7 +1460,7 @@
             const tipoEquip = r.equip?.tipo ? `<br><small style="color:#666;font-size:0.75rem;">${r.equip.tipo}</small>` : '';
             const setorEquip = r.equip?.setor || '—';
             return `
-            <tr>
+            <tr data-equip-id="${r.equip?.id}" onmouseenter="mostrarPopoverEquip('${r.equip?.id}',event)" onmousemove="posicionarPopover(event)" onmouseleave="ocultarPopover()">
               <td>${codBem}<strong>${r.equip?.nome || '—'}</strong>${tipoEquip}</td>
               <td style="font-size:0.82rem;">${setorEquip}</td>
               <td style="font-size:0.82rem;">${controle}</td>
@@ -1713,6 +1802,9 @@
       document.getElementById('equipDataHoras').value = '';
       document.getElementById('equipTipoControle').value = '';
       document.getElementById('equipObs').value = '';
+      document.getElementById('equipImagemFile').value = '';
+      document.getElementById('equipImagemPreview').innerHTML = '<span style="color:#aaa;font-size:0.8rem;">Nenhuma imagem selecionada</span>';
+      _equipImagemPendente = null;
       new bootstrap.Modal(document.getElementById('modalEquipamento')).show();
     }
 
@@ -1732,7 +1824,8 @@
         tipo_controle: document.getElementById('equipTipoControle').value,
         dataKm: document.getElementById('equipDataKm').value,
         dataHoras: document.getElementById('equipDataHoras').value,
-        obs: document.getElementById('equipObs').value
+        obs: document.getElementById('equipObs').value,
+        imagem: _equipImagemPendente !== null ? _equipImagemPendente : (db.equipamentos.find(e=>e.id===id)?.imagem || '')
       };
       
       const idx = db.equipamentos.findIndex(e => e.id === id);
@@ -1768,7 +1861,13 @@
       document.getElementById('equipTipoControle').value = equip.tipo_controle || '';
       document.getElementById('equipDataKm').value = equip.dataKm;
       document.getElementById('equipDataHoras').value = equip.dataHoras;
-      document.getElementById('equipObs').value = equip.obs;
+      document.getElementById('equipObs').value = equip.obs || '';
+      _equipImagemPendente = equip.imagem || null;
+      const _prevEl = document.getElementById('equipImagemPreview');
+      if (_prevEl) _prevEl.innerHTML = equip.imagem
+        ? `<img src="${equip.imagem}" style="max-height:100px;border-radius:4px;">`
+        : '<span style="color:#aaa;font-size:0.8rem;">Nenhuma imagem selecionada</span>';
+      document.getElementById('equipImagemFile').value = '';
       new bootstrap.Modal(document.getElementById('modalEquipamento')).show();
     }
 
@@ -2542,6 +2641,99 @@
       alert('Funcionalidade de exportação em desenvolvimento');
     }
 
+    // ==================== IMAGEM EQUIPAMENTO ====================
+    function processarImagemEquip(input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          const MAX = 400;
+          let w = img.width, h = img.height;
+          if (w > MAX || h > MAX) {
+            if (w > h) { h = Math.round(h*MAX/w); w = MAX; }
+            else { w = Math.round(w*MAX/h); h = MAX; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          _equipImagemPendente = canvas.toDataURL('image/jpeg', 0.78);
+          const prev = document.getElementById('equipImagemPreview');
+          if (prev) prev.innerHTML = `<img src="${_equipImagemPendente}" style="max-height:120px;border-radius:4px;">`;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    // ==================== POPOVER EQUIPAMENTO ====================
+    function _badgePopover(status) {
+      const c = {ok:'#22c55e',proxima:'#f97316',vencida:'#ef4444','sem-data':'#6b7280'};
+      const l = {ok:'Em Dia',proxima:'Próxima',vencida:'Vencida','sem-data':'Sem Ref.'};
+      return `<span style="font-size:.7rem;padding:2px 8px;border-radius:10px;background:${c[status]||'#6b7280'};color:#fff;font-weight:700;">${l[status]||'—'}</span>`;
+    }
+
+    function mostrarPopoverEquip(equipId, evt) {
+      const equip = db.equipamentos.find(e => e.id === equipId);
+      if (!equip) return;
+      const planosEquip = _statusPlanosGlobal.filter(s => s.equip?.id === equipId);
+      const pior = planosEquip.length
+        ? [...planosEquip].sort((a,b)=>({vencida:0,proxima:1,ok:2,'sem-data':3}[a.status]??9)-({vencida:0,proxima:1,ok:2,'sem-data':3}[b.status]??9))[0].status
+        : 'sem-data';
+      const tc = equip.tipo_controle;
+      const controleVal = tc==='KM'?`${equip.km||0} km`:tc==='Horímetro'?`${equip.horas||0} h`:tc==='Data'?'Por data':'—';
+      const imgHtml = equip.imagem
+        ? `<img src="${equip.imagem}" style="width:100%;height:130px;object-fit:cover;display:block;">`
+        : `<div style="height:70px;display:flex;align-items:center;justify-content:center;background:#2d3748;"><i class="fas fa-tractor" style="font-size:2.2rem;color:#4a5568;"></i></div>`;
+      const planosHtml = planosEquip.length === 0
+        ? '<div style="color:#64748b;font-size:0.78rem;padding:4px 0;">Nenhum plano cadastrado</div>'
+        : planosEquip.map(p => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #2d3748;gap:8px;">
+            <span style="font-size:.76rem;color:#cbd5e1;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.plano.nome}">${p.plano.nome}</span>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;">
+              ${_badgePopover(p.status)}
+              <span style="font-size:.68rem;color:#94a3b8;">${p.proximaStr||'—'}</span>
+            </div>
+          </div>`).join('');
+      const content = `
+        ${imgHtml}
+        <div style="padding:12px 14px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:6px;">
+            <div style="min-width:0;">
+              ${equip.codigo?`<div style="font-size:.68rem;color:#64748b;margin-bottom:1px;">Cód: ${equip.codigo}</div>`:''}
+              <div style="font-weight:700;font-size:.92rem;color:#f1f5f9;line-height:1.2;">${equip.nome}</div>
+              <div style="font-size:.73rem;color:#94a3b8;margin-top:1px;">${equip.tipo||''}${equip.setor?' · '+equip.setor:''}</div>
+            </div>
+            ${_badgePopover(pior)}
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;padding:8px;background:#0f172a;border-radius:6px;">
+            <div><div style="font-size:.62rem;color:#64748b;text-transform:uppercase;margin-bottom:2px;">Controle</div><div style="font-size:.8rem;font-weight:600;">${controleVal}</div></div>
+            <div><div style="font-size:.62rem;color:#64748b;text-transform:uppercase;margin-bottom:2px;">Placa/Ano</div><div style="font-size:.8rem;font-weight:600;">${equip.placa||'—'} ${equip.ano||''}</div></div>
+            <div><div style="font-size:.62rem;color:#64748b;text-transform:uppercase;margin-bottom:2px;">Status</div><div style="font-size:.8rem;font-weight:600;color:${equip.status==='Ativo'?'#22c55e':equip.status==='Inativo'?'#ef4444':'#f97316'}">${equip.status||'—'}</div></div>
+          </div>
+          <div style="font-size:.68rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Planos de Manutenção (${planosEquip.length})</div>
+          ${planosHtml}
+        </div>`;
+      document.getElementById('equipPopoverContent').innerHTML = content;
+      document.getElementById('equipPopover').style.display = 'block';
+      posicionarPopover(evt);
+    }
+
+    function posicionarPopover(evt) {
+      const pop = document.getElementById('equipPopover');
+      if (!pop || pop.style.display === 'none') return;
+      const x = evt.clientX + 18, y = evt.clientY - 20;
+      const maxX = window.innerWidth  - pop.offsetWidth  - 12;
+      const maxY = window.innerHeight - pop.offsetHeight - 12;
+      pop.style.left = Math.min(x, maxX) + 'px';
+      pop.style.top  = Math.max(10, Math.min(y, maxY)) + 'px';
+    }
+
+    function ocultarPopover() {
+      const pop = document.getElementById('equipPopover');
+      if (pop) pop.style.display = 'none';
+    }
+
     // ==================== INITIALIZATION ====================
     document.addEventListener('DOMContentLoaded', function() {
       // Sempre exige login ao abrir/recarregar o sistema — sem restauração de sessão
@@ -2559,5 +2751,10 @@
       }, 2500);
     });
   </script>
+
+  <!-- Rich Equip Popover -->
+  <div id="equipPopover">
+    <div id="equipPopoverContent"></div>
+  </div>
 </body>
 </html>
