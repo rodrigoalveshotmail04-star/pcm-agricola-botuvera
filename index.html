@@ -510,9 +510,6 @@
               <option value="ok">Em dia</option>
               <option value="sem-data">Sem data</option>
             </select>
-            <select id="dashFiltroEquip" onchange="atualizarDashboard()">
-              <option value="todos">Todos os equipamentos</option>
-            </select>
             <input type="text" id="dashPesquisa" class="dash-search-input"
               placeholder="🔍 Pesquisar por nome, código, setor, tipo, placa..."
               oninput="atualizarDashboard()" />
@@ -1417,22 +1414,12 @@
         }
       }
 
-            // ---- Popular filtro de equipamentos ----
-      const selEquip = document.getElementById('dashFiltroEquip');
-      if (selEquip) {
-        const opts = ['<option value="todos">Todos os equipamentos</option>'];
-        db.equipamentos.forEach(e => opts.push(`<option value="${e.id}">${e.nome}</option>`));
-        selEquip.innerHTML = opts.join('');
-      }
-
       // ---- Tabela Consolidada ----
       const filtroStatus = document.getElementById('dashFiltroStatus')?.value || 'todos';
-      const filtroEquip  = document.getElementById('dashFiltroEquip')?.value  || 'todos';
 
       const pesquisa = (document.getElementById('dashPesquisa')?.value || '').toLowerCase().trim();
       let rows = statusPlanos;
       if (filtroStatus !== 'todos') rows = rows.filter(r => r.status === filtroStatus);
-      if (filtroEquip  !== 'todos') rows = rows.filter(r => r.equip?.id === filtroEquip);
       if (pesquisa) rows = rows.filter(r => {
         const e = r.equip;
         return [e?.nome, e?.codigo, e?.setor, e?.tipo, e?.placa, r.plano?.nome]
