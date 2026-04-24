@@ -669,7 +669,7 @@
           <i class="fas fa-exclamation-triangle"></i><span>Ocorrências</span>
         </button>
         <button class="sidebar-item" data-tab="leituras" onclick="mudarTab('leituras',event)">
-          <i class="fas fa-gauge-high"></i><span>Km / Horímetro</span>
+          <i class="fas fa-gauge-high"></i><span>Controle</span>
         </button>
 
         <div class="sidebar-group-label">Frota</div>
@@ -784,9 +784,18 @@
           </div>
         </div>
 
-        <!-- Gráfico Temporal -->
+        <!-- Gráfico Serviços Executados -->
         <div class="dash-chart-box full">
-          <h4><i class="fas fa-chart-line"></i>Evolução Temporal — Manutenções Concluídas vs Ocorrências (últimos 6 meses)</h4>
+          <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+            <h4 style="margin:0;"><i class="fas fa-chart-bar me-2"></i>Evolução dos Serviços Executados</h4>
+            <div class="d-flex gap-2 align-items-center flex-wrap">
+              <label style="font-size:0.82rem;color:#555;margin:0;">De:</label>
+              <input type="date" id="dashServDataIni" class="form-control form-control-sm" style="width:140px;" onchange="atualizarDashboard()" />
+              <label style="font-size:0.82rem;color:#555;margin:0;">Até:</label>
+              <input type="date" id="dashServDataFim" class="form-control form-control-sm" style="width:140px;" onchange="atualizarDashboard()" />
+              <button class="btn btn-sm btn-outline-secondary" onclick="resetarFiltroServDash()">Mês Atual</button>
+            </div>
+          </div>
           <div class="chart-canvas-wrap-lg">
             <canvas id="chartTemporal"></canvas>
           </div>
@@ -909,6 +918,29 @@
               <i class="fas fa-plus me-2"></i>Registrar Serviço
             </button>
           </div>
+          <div class="row g-2 mb-3 align-items-end">
+            <div class="col-md-4">
+              <input type="text" id="servPesquisa" class="form-control form-control-sm"
+                placeholder="🔍 Buscar por plano, equipamento, executante, OS..."
+                oninput="renderServicos()" />
+            </div>
+            <div class="col-md-2">
+              <select id="servFiltroTipo" class="form-select form-select-sm" onchange="renderServicos()">
+                <option value="">Todos os Tipos</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <select id="servFiltroSetor" class="form-select form-select-sm" onchange="renderServicos()">
+                <option value="">Todos os Setores</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <input type="date" id="servDataIni" class="form-control form-control-sm" onchange="renderServicos()" title="Data inicial" />
+            </div>
+            <div class="col-md-2">
+              <input type="date" id="servDataFim" class="form-control form-control-sm" onchange="renderServicos()" title="Data final" />
+            </div>
+          </div>
           <div id="containerServicos"></div>
         </div>
       </div>
@@ -927,12 +959,22 @@
       <!-- LEITURAS -->
       <div id="leituras" class="content">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h2 style="color: var(--verde-principal); border-left: 5px solid #D4DF00; padding-left: 12px;">Km / Horímetro</h2>
+          <h2 style="color: var(--verde-principal); border-left: 5px solid #D4DF00; padding-left: 12px;">Controle</h2>
           <button class="btn btn-primary" style="background: var(--verde-principal) !important; color: var(--branco) !important; font-weight: 700; border: none;" onclick="novaLeitura()">
             <i class="fas fa-plus me-2"></i>Nova Leitura
           </button>
         </div>
-        <div id="containerLeituras"></div>
+        <!-- Sub-tabs Controle -->
+        <div class="d-flex gap-2 mb-3 border-bottom pb-2">
+          <button class="btn btn-sm" id="subTabControle" style="background:#367C2B;color:#fff;font-weight:700;" onclick="mostrarSubTabLeitura('controle')"><i class="fas fa-gauge-high me-1"></i>Controle</button>
+          <button class="btn btn-sm btn-outline-secondary" id="subTabHistorico" onclick="mostrarSubTabLeitura('historico')"><i class="fas fa-history me-1"></i>Histórico</button>
+        </div>
+        <div id="subControle">
+          <div id="containerControle"></div>
+        </div>
+        <div id="subHistorico" style="display:none;">
+          <div id="containerHistorico"></div>
+        </div>
       </div>
 
       <!-- USUÁRIOS (admin only) -->
@@ -1094,11 +1136,24 @@
           <label class="form-label">Descrição</label>
           <textarea class="form-control" id="planoDescricao" placeholder="Descrição da manutenção"></textarea>
           
-          <label class="form-label">Produto (Descrição)</label>
-          <input type="text" class="form-control" id="planoProdutoDescricao" placeholder="Ex: Óleo Motor 15W40" />
-
-          <label class="form-label mt-2">Quantidade Padrão</label>
-          <input type="text" class="form-control" id="planoProdutoQuantidade" placeholder="Ex: 10 LT" />
+          <label class="form-label mt-2">Produtos do Plano</label>
+          <div id="planoProdutosContainer">
+            <table class="table table-sm table-bordered mb-2" id="planoProdutosTable">
+              <thead style="background:#f0f0f0;">
+                <tr>
+                  <th style="font-size:0.8rem;">Cód. Produto</th>
+                  <th style="font-size:0.8rem;">Descrição</th>
+                  <th style="font-size:0.8rem;">Quantidade</th>
+                  <th style="font-size:0.8rem;">Local Aplicação</th>
+                  <th style="font-size:0.8rem;">Observação</th>
+                  <th style="width:32px;"></th>
+                </tr>
+              </thead>
+              <tbody id="planoProdutosTbody"></tbody>
+            </table>
+            <button type="button" class="btn btn-sm btn-outline-success" onclick="adicionarProdutoPlano()"><i class="fas fa-plus me-1"></i>Adicionar Produto</button>
+          </div>
+          <input type="hidden" id="planoProdutosJson" value="[]" />
           
           <label class="form-label">Última Troca - Data (Opcional)</label>
           <input type="date" class="form-control" id="planoUltimaTrocaData" />
@@ -1113,6 +1168,9 @@
 
           <label class="form-label mt-2">Última Troca - Valor do Intervalo</label>
           <input type="number" class="form-control" id="planoUltimaTrocaValor" placeholder="Ex: 250 (horas), 5000 (km), 90 (dias)" />
+
+          <label class="form-label mt-2">Última Troca - Nº Ordem de Serviço (OS)</label>
+          <input type="text" class="form-control" id="planoUltimaTrocaOs" placeholder="Número da OS" />
           
           <label class="form-label">Ativo</label>
           <div>
@@ -1153,7 +1211,12 @@
           <input type="date" class="form-control" id="agendData" required />
           
           <label class="form-label">Responsável</label>
-          <input type="text" class="form-control" id="agendResponsavel" />
+          <input type="text" class="form-control" id="agendResponsavel" list="listaResponsaveis" autocomplete="off" />
+          <datalist id="listaResponsaveis">
+            <option value="WILSON NASCIMENTO NUNES">
+            <option value="VALDEMAR PAULO DE ALMEIDA">
+            <option value="ELISEU BONFATE">
+          </datalist>
           
           <label class="form-label">Status</label>
           <select class="form-select" id="agendStatus">
@@ -1266,7 +1329,10 @@
             <option value="visualizador">Visualizador</option>
           </select>
           
-          <label class="form-label">Ativo</label>
+          <label class="form-label">E-mail (para redefinição de senha)</label>
+          <input type="email" class="form-control" id="usuEmail" placeholder="email@exemplo.com" />
+
+          <label class="form-label mt-2">Ativo</label>
           <div>
             <input type="checkbox" id="usuAtivo" checked />
             <label for="usuAtivo">Sim</label>
@@ -1834,12 +1900,20 @@
             const tipoEquip = r.equip?.tipo ? `<br><small style="color:#666;font-size:0.75rem;">${r.equip.tipo}</small>` : '';
             const setorEquip = r.equip?.setor || '—';
             return `
-            <tr data-equip-id="${r.equip?.id}" onmouseenter="mostrarPopoverEquip('${r.equip?.id}',event)" onmousemove="posicionarPopover(event)" onmouseleave="ocultarPopover()">
+            <tr data-equip-id="${r.equip?.id}" >
               <td>${codBem}<strong>${r.equip?.nome || '—'}</strong>${tipoEquip}</td>
               <td style="font-size:0.82rem;">${setorEquip}</td>
               <td style="font-size:0.82rem;">${controle}</td>
               <td>${r.plano.nome}</td>
-              <td>${r.plano.ultima_troca_data ? new Date(r.plano.ultima_troca_data+'T00:00:00').toLocaleDateString('pt-BR') : '—'}</td>
+              <td>${r.plano.ultima_troca_data ? new Date(r.plano.ultima_troca_data+'T00:00:00').toLocaleDateString('pt-BR') : '—'}${
+                (() => {
+                  // OS from services or plan
+                  const osServ = (() => { const s = [...(db.servicos||[])].filter(sv => sv.plano_id === r.plano.id).sort((a,b)=>new Date(b.data_execucao)-new Date(a.data_execucao))[0]; return s?.numero_os || ''; })();
+                  const osPlan = r.plano.ultima_troca_os || '';
+                  const os = osServ || osPlan;
+                  return os ? `<br><small style='color:#555;font-size:0.75rem;'>OS: ${os}</small>` : '';
+                })()
+              }</td>
               <td>${r.proximaStr}</td>
               <td style="font-size:0.78rem;color:#555">${r.detalhe}</td>
               <td>${badgeMap[r.status] || ''}</td>
@@ -1982,45 +2056,66 @@
         }
       }
 
-      const concluidas = meses.map(m => db.agendamentos.filter(a => {
-        if (a.status !== 'Concluído') return false;
-        const d = new Date(a.data || a.data_prevista || '');
-        return d.getFullYear() === m.ano && d.getMonth() === m.mes;
-      }).length);
+      // Serviços executados no período filtrado
+      const _dashIni = document.getElementById('dashServDataIni')?.value;
+      const _dashFim = document.getElementById('dashServDataFim')?.value;
 
-      const ocorrResolv = meses.map(m => db.ocorrencias.filter(o => {
-        if (o.status !== 'Resolvido') return false;
-        const d = new Date(o.data || '');
-        return d.getFullYear() === m.ano && d.getMonth() === m.mes;
-      }).length);
+      // Default: mês atual
+      const _hoje = new Date();
+      const _iniDefault = new Date(_hoje.getFullYear(), _hoje.getMonth(), 1).toISOString().split('T')[0];
+      const _fimDefault = new Date(_hoje.getFullYear(), _hoje.getMonth() + 1, 0).toISOString().split('T')[0];
+      const _filtroIni = _dashIni || _iniDefault;
+      const _filtroFim = _dashFim || _fimDefault;
 
-      const ocorrAbertas = meses.map(m => db.ocorrencias.filter(o => {
-        const d = new Date(o.data || '');
-        return d.getFullYear() === m.ano && d.getMonth() === m.mes;
-      }).length);
+      if (!_dashIni && document.getElementById('dashServDataIni')) {
+        document.getElementById('dashServDataIni').value = _iniDefault;
+        document.getElementById('dashServDataFim').value = _fimDefault;
+      }
+
+      // Agrupar serviços por dia no período
+      const _servPeriodo = (db.servicos || []).filter(s => {
+        if (!s.data_execucao) return false;
+        return s.data_execucao >= _filtroIni && s.data_execucao <= _filtroFim;
+      });
+
+      // Gerar eixo X: dias do período
+      const _diasMap = {};
+      const _d1 = new Date(_filtroIni + 'T00:00:00');
+      const _d2 = new Date(_filtroFim + 'T00:00:00');
+      const _diasLabels = [];
+      for (let _dt = new Date(_d1); _dt <= _d2; _dt.setDate(_dt.getDate() + 1)) {
+        const _key = _dt.toISOString().split('T')[0];
+        _diasLabels.push(_dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }));
+        _diasMap[_key] = 0;
+      }
+      _servPeriodo.forEach(s => { if (_diasMap[s.data_execucao] !== undefined) _diasMap[s.data_execucao]++; });
+      const _servCounts = Object.values(_diasMap);
 
       const ctxT = document.getElementById('chartTemporal');
       if (ctxT) {
         _chartTemporal = new Chart(ctxT, {
-          type: 'line',
+          type: 'bar',
           data: {
-            labels: mesesLabel,
-            datasets: [
-              { label: 'Manutenções Concluídas', data: concluidas,
-                borderColor: cores.ok, backgroundColor: 'rgba(54,124,43,0.1)',
-                fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: cores.ok },
-              { label: 'Ocorrências Resolvidas', data: ocorrResolv,
-                borderColor: '#0d6efd', backgroundColor: 'rgba(13,110,253,0.07)',
-                fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#0d6efd' },
-              { label: 'Total Ocorrências', data: ocorrAbertas,
-                borderColor: cores.vencida, backgroundColor: 'rgba(220,53,69,0.07)',
-                fill: false, tension: 0.4, pointRadius: 5, borderDash: [5,3], pointBackgroundColor: cores.vencida }
-            ]
+            labels: _diasLabels,
+            datasets: [{
+              label: 'Serviços Executados',
+              data: _servCounts,
+              backgroundColor: 'rgba(54,124,43,0.75)',
+              borderColor: '#367C2B',
+              borderWidth: 1,
+              borderRadius: 4
+            }]
           },
           options: {
             responsive: true, maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-            plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } } }
+            scales: {
+              y: { beginAtZero: true, ticks: { stepSize: 1 }, title: { display: true, text: 'Qtd. Serviços' } },
+              x: { ticks: { maxRotation: 45, font: { size: 10 } } }
+            },
+            plugins: {
+              legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } },
+              tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y} serviço(s)` } }
+            }
           }
         });
       }
@@ -2143,11 +2238,55 @@
       const container = document.getElementById('containerServicos');
       if (!container) return;
       if (!db.servicos || db.servicos.length === 0) {
-        container.innerHTML = '<p class="text-muted">Nenhum serviço registrado</p>'; return;
+        container.innerHTML = '<p class="text-muted">Nenhum serviço registrado</p>';
+        return;
       }
-      const sorted = [...db.servicos].sort((a,b) => new Date(b.data_execucao) - new Date(a.data_execucao));
+
+      // Populate filter dropdowns (first run)
+      const tipoSel = document.getElementById('servFiltroTipo');
+      const setorSel = document.getElementById('servFiltroSetor');
+      if (tipoSel && tipoSel.options.length <= 1) {
+        const tipos = [...new Set(db.equipamentos.map(e => e.tipo).filter(Boolean))].sort();
+        tipos.forEach(t => { const o = document.createElement('option'); o.value = t; o.text = t; tipoSel.appendChild(o); });
+      }
+      if (setorSel && setorSel.options.length <= 1) {
+        const setores = [...new Set(db.equipamentos.map(e => e.setor).filter(Boolean))].sort();
+        setores.forEach(s => { const o = document.createElement('option'); o.value = s; o.text = s; setorSel.appendChild(o); });
+      }
+
+      const pesq = (document.getElementById('servPesquisa')?.value || '').toLowerCase();
+      const filtTipo = document.getElementById('servFiltroTipo')?.value || '';
+      const filtSetor = document.getElementById('servFiltroSetor')?.value || '';
+      const filtIni = document.getElementById('servDataIni')?.value || '';
+      const filtFim = document.getElementById('servDataFim')?.value || '';
+
+      let lista = [...db.servicos].sort((a,b) => new Date(b.data_execucao) - new Date(a.data_execucao));
+
+      lista = lista.filter(s => {
+        const equip = db.equipamentos.find(e => e.id === s.equipamento_id);
+        const plano = db.planos.find(p => p.id === s.plano_id);
+        if (filtTipo && (!equip || equip.tipo !== filtTipo)) return false;
+        if (filtSetor && (!equip || equip.setor !== filtSetor)) return false;
+        if (filtIni && s.data_execucao < filtIni) return false;
+        if (filtFim && s.data_execucao > filtFim) return false;
+        if (pesq) {
+          const haystack = [
+            plano?.nome || '', equip?.nome || '', s.executante || '',
+            s.numero_os || '', equip?.codigo || ''
+          ].join(' ').toLowerCase();
+          if (!haystack.includes(pesq)) return false;
+        }
+        return true;
+      });
+
       const canEdit = currentUser.perfil !== 'visualizador';
-      container.innerHTML = sorted.map(s => {
+
+      if (lista.length === 0) {
+        container.innerHTML = '<p class="text-muted">Nenhum serviço encontrado com os filtros aplicados</p>';
+        return;
+      }
+
+      container.innerHTML = lista.map(s => {
         const equip = db.equipamentos.find(e => e.id === s.equipamento_id);
         const plano = db.planos.find(p => p.id === s.plano_id);
         return `<div class="card-equip">
@@ -2155,7 +2294,7 @@
             <div>
               <h5 class="card-title"><i class="fas fa-wrench me-2"></i>${plano ? plano.nome : 'Plano removido'}</h5>
               <div class="card-meta">Data: <strong>${s.data_execucao ? new Date(s.data_execucao+'T00:00:00').toLocaleDateString('pt-BR') : '—'}</strong></div>
-              <div class="card-meta">Equipamento: <strong>${equip ? equip.nome : '—'}</strong></div>
+              <div class="card-meta">Equipamento: <strong>${equip ? equip.nome : '—'}</strong>${equip?.codigo ? ` <small style="color:#888;">(${equip.codigo})</small>` : ''}</div>
               <div class="card-meta">OS: <strong>${s.numero_os || '—'}</strong></div>
               <div class="card-meta">Executante: <strong>${s.executante || '—'}</strong></div>
               ${s.valor_medidor ? `<div class="card-meta">${s.tipo_medidor}: <strong>${s.valor_medidor}</strong></div>` : ''}
@@ -2345,6 +2484,9 @@
       document.getElementById('planoUltimaTrocaData').value = '';
       document.getElementById('planoUltimaTrocaTipo').value = '';
       document.getElementById('planoAtivo').checked = true;
+      document.getElementById('planoProdutosJson').value = '[]';
+      document.getElementById('planoProdutosTbody') && (document.getElementById('planoProdutosTbody').innerHTML = '');
+      document.getElementById('planoUltimaTrocaOs').value = '';
       
       renderPlanosCodigos();
       new bootstrap.Modal(document.getElementById('modalPlano')).show();
@@ -2361,11 +2503,11 @@
         intervalo_km: document.getElementById('planoIntervaloKm').value || 0,
         intervalo_horas: document.getElementById('planoIntervaloHoras').value || 0,
         descricao: document.getElementById('planoDescricao').value,
-        produto_descricao: document.getElementById('planoProdutoDescricao').value,
-        produto_quantidade: document.getElementById('planoProdutoQuantidade').value,
+        produtos: JSON.parse(document.getElementById('planoProdutosJson')?.value || '[]'),
         ultima_troca_data: document.getElementById('planoUltimaTrocaData').value,
         ultima_troca_tipo: document.getElementById('planoUltimaTrocaTipo').value,
         ultima_troca_valor: document.getElementById('planoUltimaTrocaValor').value || 0,
+        ultima_troca_os: document.getElementById('planoUltimaTrocaOs').value || '',
         ultima_troca_km: document.getElementById('planoUltimaTrocaKm')?.value || 0,
         ultima_troca_horas: document.getElementById('planoUltimaTrocaHoras')?.value || 0,
         ativo: document.getElementById('planoAtivo').checked
@@ -2397,12 +2539,15 @@
       document.getElementById('planoIntervaloKm').value = plano.intervalo_km;
       document.getElementById('planoIntervaloHoras').value = plano.intervalo_horas;
       document.getElementById('planoDescricao').value = plano.descricao;
-      document.getElementById('planoProdutoDescricao').value = plano.produto_descricao || plano.quantidade_padrao || '';
-      document.getElementById('planoProdutoQuantidade').value = plano.produto_quantidade || '';
       document.getElementById('planoUltimaTrocaData').value = plano.ultima_troca_data || '';
       document.getElementById('planoUltimaTrocaTipo').value = plano.ultima_troca_tipo || '';
       document.getElementById('planoUltimaTrocaValor').value = plano.ultima_troca_valor || '';
+      document.getElementById('planoUltimaTrocaOs').value = plano.ultima_troca_os || '';
       document.getElementById('planoAtivo').checked = plano.ativo !== false;
+      // Produtos
+      const produtosPlano = plano.produtos || [];
+      document.getElementById('planoProdutosJson').value = JSON.stringify(produtosPlano);
+      renderProdutosPlanoTable();
       
       const codigos = plano.equipamentos_codigos || (plano.equipamento_id ? [] : []);
       document.getElementById('planoEquipamentosJson').value = JSON.stringify(codigos);
@@ -2425,9 +2570,8 @@
     function renderPlanos() {
       const container = document.getElementById('containerPlanos');
       if (!container) return;
-      
       container.innerHTML = '';
-      
+
       const q = (document.getElementById('planosPesquisa')?.value || '').trim().toLowerCase();
       let lista = db.planos;
       if (q) {
@@ -2447,51 +2591,104 @@
           const equip = db.equipamentos.find(e => e.id === plano.equipamento_id);
           if (!equip) return false;
           return (equip.codigo || '').toLowerCase().includes(q) ||
-                 equip.nome.toLowerCase().includes(q) ||
-                 (equip.tipo || '').toLowerCase().includes(q) ||
-                 (equip.setor || '').toLowerCase().includes(q);
+                 equip.nome.toLowerCase().includes(q);
         });
       }
-      
+
       if (lista.length === 0) {
         container.innerHTML = '<p class="text-muted">Nenhum plano encontrado</p>';
         return;
       }
-      
+
+      // Agrupar por equipamento
+      const grupos = {};
       lista.forEach(plano => {
-        const equip = db.equipamentos.find(e => e.id === plano.equipamento_id);
-        const canEdit = currentUser.perfil !== 'visualizador';
-        const card = document.createElement('div');
-        card.className = 'card-equip';
-        card.innerHTML = `
-          <div class="d-flex justify-content-between align-items-start">
-            <div style="flex: 1;">
-              <h5 class="card-title">${plano.nome}</h5>
-              <div class="card-meta">Equipamentos: <strong>${
-                (plano.equipamentos_codigos && plano.equipamentos_codigos.length > 0)
-                  ? plano.equipamentos_codigos.map(c => { const e = db.equipamentos.find(eq=>eq.codigo===c); return e?e.nome:c; }).join(', ')
-                  : (equip ? equip.nome : '—')
-              }</strong></div>
-              <div class="card-meta">Intervalo: 
-                <strong>${plano.intervalo_dias ? plano.intervalo_dias + ' dias' : ''}
-                ${plano.intervalo_dias && (plano.intervalo_km || plano.intervalo_horas) ? ' / ' : ''}
-                ${plano.intervalo_km ? plano.intervalo_km + ' KM' : ''}
-                ${plano.intervalo_km && plano.intervalo_horas ? ' / ' : ''}
-                ${plano.intervalo_horas ? plano.intervalo_horas + ' horas' : ''}</strong>
+        const codigos = (plano.equipamentos_codigos && plano.equipamentos_codigos.length > 0)
+          ? plano.equipamentos_codigos
+          : (plano.equipamento_id ? [plano.equipamento_id] : ['__sem_equip__']);
+
+        codigos.forEach(c => {
+          const equip = db.equipamentos.find(eq => eq.codigo === c || eq.id === c);
+          const grupoKey = equip ? (equip.codigo || equip.id) : c;
+          const grupoLabel = equip
+            ? `${equip.nome}${equip.codigo ? ' — Cód. Bem: ' + equip.codigo : ''}`
+            : (c === '__sem_equip__' ? 'Sem Equipamento' : c);
+          if (!grupos[grupoKey]) grupos[grupoKey] = { label: grupoLabel, equip, planos: [] };
+          if (!grupos[grupoKey].planos.find(p => p.id === plano.id)) {
+            grupos[grupoKey].planos.push(plano);
+          }
+        });
+      });
+
+      const canEdit = currentUser.perfil !== 'visualizador';
+
+      Object.values(grupos).sort((a, b) => a.label.localeCompare(b.label)).forEach(grupo => {
+        const grupoDiv = document.createElement('div');
+        grupoDiv.className = 'mb-4';
+        grupoDiv.innerHTML = `<div style="background:var(--verde-principal,#006020);color:#fff;padding:8px 14px;border-radius:6px 6px 0 0;font-weight:700;font-size:0.92rem;margin-bottom:0;">
+          <i class="fas fa-tractor me-2"></i>${grupo.label}
+          <span class="badge" style="background:#D4DF00;color:#002D10;margin-left:8px;">${grupo.planos.length} plano(s)</span>
+        </div>`;
+
+        grupo.planos.forEach(plano => {
+          const card = document.createElement('div');
+          card.className = 'card-equip';
+          card.style.borderRadius = '0';
+          card.style.borderTop = '1px solid #e0e0e0';
+
+          // Produtos
+          const produtos = plano.produtos || [];
+          const prodHtml = produtos.length > 0
+            ? `<div class="mt-2">
+                <div style="font-size:0.8rem;color:#555;font-weight:600;margin-bottom:4px;">Produtos:</div>
+                <table class="table table-sm table-bordered mb-0" style="font-size:0.78rem;">
+                  <thead style="background:#f8f8f8;">
+                    <tr><th>Cód.</th><th>Descrição</th><th>Qtd.</th><th>Local</th><th>Obs.</th></tr>
+                  </thead>
+                  <tbody>
+                    ${produtos.map(p => `<tr><td>${p.codigo||'—'}</td><td>${p.descricao||'—'}</td><td>${p.quantidade||'—'}</td><td>${p.local||'—'}</td><td>${p.observacao||'—'}</td></tr>`).join('')}
+                  </tbody>
+                </table>
+              </div>`
+            : '';
+
+          const codBemDisplay = (plano.equipamentos_codigos && plano.equipamentos_codigos.length > 0)
+            ? plano.equipamentos_codigos.join(', ')
+            : (grupo.equip ? (grupo.equip.codigo || '—') : '—');
+
+          card.innerHTML = `
+            <div class="d-flex justify-content-between align-items-start">
+              <div style="flex: 1;">
+                <h5 class="card-title">${plano.nome}</h5>
+                <div class="card-meta">Cód. Bem: <strong>${codBemDisplay}</strong></div>
+                <div class="card-meta">Intervalo:
+                  <strong>${[
+                    plano.intervalo_dias ? plano.intervalo_dias + ' dias' : '',
+                    plano.intervalo_km ? plano.intervalo_km + ' KM' : '',
+                    plano.intervalo_horas ? plano.intervalo_horas + ' horas' : ''
+                  ].filter(Boolean).join(' / ') || '—'}</strong>
+                </div>
+                <div class="card-meta">Última Troca:
+                  <strong>${plano.ultima_troca_data || '—'}${plano.ultima_troca_tipo ? ' (' + plano.ultima_troca_tipo + (plano.ultima_troca_valor ? ': ' + plano.ultima_troca_valor : '') + ')' : ''}${plano.ultima_troca_os ? ' — OS: ' + plano.ultima_troca_os : ''}</strong>
+                </div>
+                ${prodHtml}
               </div>
-              <div class="card-meta">Produto: <strong>${plano.produto_descricao || plano.quantidade_padrao || '-'}</strong></div>
-              <div class="card-meta">Quantidade: <strong>${plano.produto_quantidade || '-'}</strong></div>
-              <div class="card-meta">Última Troca: <strong>${plano.ultima_troca_data || '-'}${plano.ultima_troca_tipo ? ' (' + plano.ultima_troca_tipo + (plano.ultima_troca_valor ? ': ' + plano.ultima_troca_valor : '') + ')' : ''}</strong></div>
+              <div class="d-flex gap-2">
+                ${canEdit ? `<button class="btn btn-sm btn-primary" onclick="editarPlano('${plano.id}')"><i class="fas fa-edit"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="deletarPlano('${plano.id}')"><i class="fas fa-trash"></i></button>` : ''}
+              </div>
             </div>
-            <div class="d-flex gap-2">
-              ${canEdit ? `<button class="btn btn-sm btn-primary" onclick="editarPlano('${plano.id}')"><i class="fas fa-edit"></i></button>
-              <button class="btn btn-sm btn-danger" onclick="deletarPlano('${plano.id}')"><i class="fas fa-trash"></i></button>` : ''}
-            </div>
-          </div>
-        `;
-        container.appendChild(card);
+          `;
+          grupoDiv.appendChild(card);
+        });
+
+        // Close border-radius bottom
+        const lastCard = grupoDiv.lastElementChild;
+        if (lastCard) lastCard.style.borderRadius = '0 0 6px 6px';
+        container.appendChild(grupoDiv);
       });
     }
+
 
     // ==================== AGENDAMENTOS ====================
     function novoAgendamento() {
@@ -2591,19 +2788,22 @@
         const canEdit = currentUser.perfil !== 'visualizador';
         const card = document.createElement('div');
         card.className = 'card-equip';
+        const isAberto = agend.status === 'Agendado' || agend.status === 'Em execução';
         card.innerHTML = `
           <div class="d-flex justify-content-between align-items-start">
             <div style="flex: 1;">
               <h5 class="card-title">${plano ? plano.nome : 'Sem plano'}</h5>
               <div class="card-meta">Equipamento: <strong>${equip ? equip.nome : '-'}</strong></div>
+              ${equip && equip.codigo ? `<div class="card-meta">Cód. Bem: <strong>${equip.codigo}</strong></div>` : ''}
               <div class="card-meta">Data Prevista: <strong>${new Date(agend.data).toLocaleDateString('pt-BR')}</strong></div>
               <div class="card-meta">Responsável: <strong>${agend.responsavel || '-'}</strong></div>
               ${agend.ordem_servico ? `<div class="card-meta">OS: <strong>${agend.ordem_servico}</strong></div>` : ''}
               <div class="card-meta">Status: <span class="badge-status badge-ativo">${agend.status}</span></div>
             </div>
-            <div class="d-flex gap-2">
-              ${canEdit ? `<button class="btn btn-sm btn-primary" onclick="editarAgendamento('${agend.id}')"><i class="fas fa-edit"></i></button>
-              <button class="btn btn-sm btn-danger" onclick="deletarAgendamento('${agend.id}')"><i class="fas fa-trash"></i></button>` : ''}
+            <div class="d-flex gap-2 flex-column align-items-end">
+              ${canEdit && isAberto ? `<button class="btn btn-sm" style="background:#D4DF00;color:#002D10;font-weight:700;border:none;" onclick="executarAgendamento('${agend.id}')"><i class="fas fa-check me-1"></i>Executar</button>` : ''}
+              ${canEdit ? `<div class="d-flex gap-1"><button class="btn btn-sm btn-primary" onclick="editarAgendamento('${agend.id}')"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-sm btn-danger" onclick="deletarAgendamento('${agend.id}')"><i class="fas fa-trash"></i></button></div>` : ''}
             </div>
           </div>
         `;
@@ -2815,50 +3015,98 @@
       }
     }
 
-    function renderLeituras() {
-      const container = document.getElementById('containerLeituras');
-      if (!container) return;
-      
-      container.innerHTML = '';
-      
-      // Equipamentos summary grid
-      const grid = document.createElement('div');
-      grid.className = 'row g-2 mb-4';
-      grid.id = 'leituraEquipGrid';
-      
-      if (db.equipamentos.length > 0) {
-        grid.innerHTML = '<h5 class="col-12">Valores Atuais dos Equipamentos</h5>' +
-          db.equipamentos.filter(e => e.status === 'Ativo').map(e => `
-            <div class="col-md-6 col-lg-4">
-              <div class="card-equip" style="padding:12px;">
-                <div style="font-weight:700;margin-bottom:8px;">${e.nome}</div>
-                <div style="display:flex;gap:12px;font-size:0.9rem;">
-                  <div><span style="color:#888;">KM:</span> <strong>${e.km || '0'}</strong> <button class="btn btn-xs" onclick="novaLeitura('${e.id}','KM')" style="padding:2px 6px;font-size:0.75rem;margin-left:4px;">+</button></div>
-                  <div><span style="color:#888;">Horas:</span> <strong>${e.horas || '0'}</strong> <button class="btn btn-xs" onclick="novaLeitura('${e.id}','Horas')" style="padding:2px 6px;font-size:0.75rem;margin-left:4px;">+</button></div>
-                </div>
-              </div>
-            </div>
-          `).join('');
-        container.appendChild(grid);
+    function mostrarSubTabLeitura(qual) {
+      document.getElementById('subControle').style.display = qual === 'controle' ? '' : 'none';
+      document.getElementById('subHistorico').style.display = qual === 'historico' ? '' : 'none';
+      document.getElementById('subTabControle').style.background = qual === 'controle' ? '#367C2B' : '';
+      document.getElementById('subTabControle').style.color = qual === 'controle' ? '#fff' : '';
+      document.getElementById('subTabControle').className = qual === 'controle' ? 'btn btn-sm' : 'btn btn-sm btn-outline-secondary';
+      document.getElementById('subTabHistorico').className = qual === 'historico' ? 'btn btn-sm' : 'btn btn-sm btn-outline-secondary';
+      if (qual === 'historico') {
+        document.getElementById('subTabHistorico').style.background = '#367C2B';
+        document.getElementById('subTabHistorico').style.color = '#fff';
+      } else {
+        document.getElementById('subTabHistorico').style.background = '';
+        document.getElementById('subTabHistorico').style.color = '';
       }
-      
-      // Histórico de leituras
-      if (db.leituras.length === 0) {
-        const p = document.createElement('p');
-        p.className = 'text-muted';
-        p.textContent = 'Nenhuma leitura cadastrada';
-        container.appendChild(p);
+      renderLeituras();
+    }
+
+    function renderLeituras() {
+      renderControle();
+      renderHistoricoLeituras();
+    }
+
+    function renderControle() {
+      const container = document.getElementById('containerControle');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const equipAtivos = db.equipamentos.filter(e => e.status === 'Ativo' || !e.status);
+      if (equipAtivos.length === 0) {
+        container.innerHTML = '<p class="text-muted">Nenhum equipamento cadastrado</p>';
         return;
       }
-      
-      const histTitle = document.createElement('h5');
-      histTitle.textContent = 'Histórico de Leituras';
-      histTitle.style.marginTop = '20px';
-      container.appendChild(histTitle);
-      
-      db.leituras.sort((a, b) => new Date(b.data) - new Date(a.data));
-      
-      db.leituras.forEach(lei => {
+
+      // Agrupar por tipo_controle
+      const grupos = {};
+      equipAtivos.forEach(e => {
+        const tc = e.tipo_controle || 'Outro';
+        if (!grupos[tc]) grupos[tc] = [];
+        grupos[tc].push(e);
+      });
+
+      Object.entries(grupos).sort().forEach(([tipo, equips]) => {
+        const grupoDiv = document.createElement('div');
+        grupoDiv.className = 'mb-4';
+        grupoDiv.innerHTML = `<div style="background:var(--verde-principal,#006020);color:#fff;padding:7px 14px;border-radius:6px 6px 0 0;font-weight:700;font-size:0.88rem;margin-bottom:0;">
+          <i class="fas fa-gauge-high me-2"></i>${tipo}
+        </div>`;
+
+        equips.sort((a,b) => a.nome.localeCompare(b.nome)).forEach((e, idx_e) => {
+          const isLast = idx_e === equips.length - 1;
+          const card = document.createElement('div');
+          card.className = 'card-equip';
+          card.style.cssText = `border-radius:${isLast ? '0 0 6px 6px' : '0'};border-top:1px solid #e0e0e0;`;
+
+          const kmVal = e.km || '0';
+          const horasVal = e.horas || '0';
+          const codBem = e.codigo ? `<small style="color:#888;font-size:0.78rem;">${e.codigo}</small> ` : '';
+
+          card.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <div style="font-weight:700;">${codBem}${e.nome}</div>
+                <div style="display:flex;gap:16px;margin-top:6px;font-size:0.9rem;">
+                  ${tipo !== 'Horímetro' ? `<div><span style="color:#888;">KM:</span> <strong>${kmVal}</strong></div>` : ''}
+                  ${tipo !== 'KM' ? `<div><span style="color:#888;">Horas:</span> <strong>${horasVal}</strong></div>` : ''}
+                </div>
+              </div>
+              <div class="d-flex gap-2">
+                ${tipo !== 'Horímetro' ? `<button class="btn btn-sm btn-outline-success" onclick="novaLeitura('${e.id}','KM')" title="Atualizar KM"><i class="fas fa-road me-1"></i>KM</button>` : ''}
+                ${tipo !== 'KM' ? `<button class="btn btn-sm btn-outline-primary" onclick="novaLeitura('${e.id}','Horas')" title="Atualizar Horas"><i class="fas fa-clock me-1"></i>Horas</button>` : ''}
+              </div>
+            </div>
+          `;
+          grupoDiv.appendChild(card);
+        });
+        container.appendChild(grupoDiv);
+      });
+    }
+
+    function renderHistoricoLeituras() {
+      const container = document.getElementById('containerHistorico');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!db.leituras || db.leituras.length === 0) {
+        container.innerHTML = '<p class="text-muted">Nenhuma leitura cadastrada</p>';
+        return;
+      }
+
+      const sorted = [...db.leituras].sort((a, b) => new Date(b.data) - new Date(a.data));
+
+      sorted.forEach(lei => {
         const equip = db.equipamentos.find(e => e.id === lei.equipamento_id);
         const canEdit = currentUser.perfil !== 'visualizador';
         const card = document.createElement('div');
@@ -2893,6 +3141,7 @@
       document.getElementById('usuLogin').value = '';
       document.getElementById('usuSenha').value = '';
       document.getElementById('usuPerfil').value = 'operador';
+      document.getElementById('usuEmail').value = '';
       document.getElementById('usuAtivo').checked = true;
       new bootstrap.Modal(document.getElementById('modalUsuario')).show();
     }
@@ -2905,6 +3154,7 @@
         login: document.getElementById('usuLogin').value,
         senha: document.getElementById('usuSenha').value,
         perfil: document.getElementById('usuPerfil').value,
+        email: document.getElementById('usuEmail').value || '',
         ativo: document.getElementById('usuAtivo').checked
       };
       
@@ -2932,6 +3182,7 @@
         document.getElementById('usuLogin').value = usu.login;
         document.getElementById('usuSenha').value = usu.senha;
         document.getElementById('usuPerfil').value = usu.perfil;
+        document.getElementById('usuEmail').value = usu.email || '';
         document.getElementById('usuAtivo').checked = usu.ativo !== false;
         new bootstrap.Modal(document.getElementById('modalUsuario')).show();
       });
@@ -2982,6 +3233,7 @@
                 <h5 class="card-title">${usu.nome}</h5>
                 <div class="card-meta">Login: <strong>${usu.login}</strong></div>
                 <div class="card-meta">Perfil: <span class="badge ${perfil_badge}">${usu.perfil}</span></div>
+                ${usu.email ? `<div class="card-meta">E-mail: <strong>${usu.email}</strong></div>` : ''}
                 <div class="card-meta">Status: <span class="badge-status ${usu.ativo ? 'badge-ativo' : 'badge-inativo'}">${usu.ativo ? 'Ativo' : 'Inativo'}</span></div>
               </div>
               <div class="d-flex gap-2">
@@ -2994,6 +3246,102 @@
         }
       });
     }
+
+
+    // ==================== EXECUTAR AGENDAMENTO ====================
+    function executarAgendamento(agendId) {
+      const agend = db.agendamentos.find(a => a.id === agendId);
+      if (!agend) return;
+      const equip = db.equipamentos.find(e => e.id === agend.equipamento_id);
+      const plano = db.planos.find(p => p.id === agend.plano_id);
+
+      // Pre-fill serviço modal
+      document.getElementById('serviId').value = '';
+      document.getElementById('serviEquipamento').value = agend.equipamento_id || '';
+      preencherSelectEquipamentos('serviEquipamento');
+      document.getElementById('serviEquipamento').value = agend.equipamento_id || '';
+      filtrarPlanosServico();
+      setTimeout(() => {
+        document.getElementById('serviPlano').value = agend.plano_id || '';
+      }, 100);
+      document.getElementById('serviDataExecucao').value = new Date().toISOString().split('T')[0];
+      document.getElementById('serviExecutante').value = agend.responsavel || '';
+      document.getElementById('serviNumOs').value = agend.ordem_servico || '';
+      document.getElementById('serviObs').value = `Executado via agendamento de ${new Date(agend.data).toLocaleDateString('pt-BR')}`;
+      document.getElementById('serviTipoMedidor').value = '';
+      document.getElementById('serviValorMedidor').value = '';
+      document.getElementById('serviEquipSearch').value = equip ? equip.nome : '';
+
+      // Store agend id to mark as concluded on save
+      document.getElementById('serviId').dataset.agendId = agendId;
+
+      new bootstrap.Modal(document.getElementById('modalServico')).show();
+    }
+
+    // ==================== RESETAR FILTRO SERV DASH ====================
+    function resetarFiltroServDash() {
+      const hoje = new Date();
+      document.getElementById('dashServDataIni').value = new Date(hoje.getFullYear(), hoje.getMonth(), 1).toISOString().split('T')[0];
+      document.getElementById('dashServDataFim').value = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0).toISOString().split('T')[0];
+      atualizarDashboard();
+    }
+
+    // ==================== PRODUTOS DO PLANO ====================
+    function adicionarProdutoPlano() {
+      const tbody = document.getElementById('planoProdutosTbody');
+      if (!tbody) return;
+      const rowIdx = tbody.rows.length;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" class="form-control form-control-sm prod-codigo" placeholder="Cód." /></td>
+        <td><input type="text" class="form-control form-control-sm prod-descricao" placeholder="Descrição" /></td>
+        <td><input type="text" class="form-control form-control-sm prod-quantidade" placeholder="Qtd." style="width:70px;" /></td>
+        <td><input type="text" class="form-control form-control-sm prod-local" placeholder="Local" /></td>
+        <td><input type="text" class="form-control form-control-sm prod-obs" placeholder="Obs." /></td>
+        <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove(); sincronizarProdutosJson()"><i class="fas fa-times"></i></button></td>
+      `;
+      tr.querySelectorAll('input').forEach(inp => inp.addEventListener('input', sincronizarProdutosJson));
+      tbody.appendChild(tr);
+      sincronizarProdutosJson();
+    }
+
+    function sincronizarProdutosJson() {
+      const tbody = document.getElementById('planoProdutosTbody');
+      if (!tbody) return;
+      const produtos = [];
+      tbody.querySelectorAll('tr').forEach(tr => {
+        produtos.push({
+          codigo: tr.querySelector('.prod-codigo')?.value || '',
+          descricao: tr.querySelector('.prod-descricao')?.value || '',
+          quantidade: tr.querySelector('.prod-quantidade')?.value || '',
+          local: tr.querySelector('.prod-local')?.value || '',
+          observacao: tr.querySelector('.prod-obs')?.value || ''
+        });
+      });
+      document.getElementById('planoProdutosJson').value = JSON.stringify(produtos);
+    }
+
+    function renderProdutosPlanoTable() {
+      const tbody = document.getElementById('planoProdutosTbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      const produtos = JSON.parse(document.getElementById('planoProdutosJson')?.value || '[]');
+      produtos.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><input type="text" class="form-control form-control-sm prod-codigo" value="${p.codigo||''}" placeholder="Cód." /></td>
+          <td><input type="text" class="form-control form-control-sm prod-descricao" value="${p.descricao||''}" placeholder="Descrição" /></td>
+          <td><input type="text" class="form-control form-control-sm prod-quantidade" value="${p.quantidade||''}" placeholder="Qtd." style="width:70px;" /></td>
+          <td><input type="text" class="form-control form-control-sm prod-local" value="${p.local||''}" placeholder="Local" /></td>
+          <td><input type="text" class="form-control form-control-sm prod-obs" value="${p.observacao||''}" placeholder="Obs." /></td>
+          <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove(); sincronizarProdutosJson()"><i class="fas fa-times"></i></button></td>
+        `;
+        tr.querySelectorAll('input').forEach(inp => inp.addEventListener('input', sincronizarProdutosJson));
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ==================== novoPlano: clear produtos ====================
 
     // ==================== HELPER FUNCTIONS ====================
     function preencherSelectEquipamentos(selectId) {
@@ -3085,129 +3433,4 @@
       });
     }
 
-    function importExcel() {
-      alert('Funcionalidade de importação em desenvolvimento');
-    }
-
-    function exportExcel() {
-      alert('Funcionalidade de exportação em desenvolvimento');
-    }
-
-    // ==================== IMAGEM EQUIPAMENTO ====================
-    function processarImagemEquip(input) {
-      if (!input.files || !input.files[0]) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        const img = new Image();
-        img.onload = () => {
-          // Crop central quadrado → 450×450 (padrão BI consistente)
-          const SIZE = 450;
-          const side = Math.min(img.width, img.height);
-          const sx   = Math.round((img.width  - side) / 2);
-          const sy   = Math.round((img.height - side) / 2);
-          const canvas = document.createElement('canvas');
-          canvas.width = SIZE; canvas.height = SIZE;
-          canvas.getContext('2d').drawImage(img, sx, sy, side, side, 0, 0, SIZE, SIZE);
-          _equipImagemPendente = canvas.toDataURL('image/jpeg', 0.82);
-          const prev = document.getElementById('equipImagemPreview');
-          if (prev) prev.innerHTML = `
-            <img src="${_equipImagemPendente}"
-              style="width:100%;height:200px;object-fit:cover;border-radius:6px;display:block;">
-            <div style="font-size:0.72rem;color:#666;text-align:center;margin-top:4px;">
-              <i class="fas fa-crop-alt me-1"></i>Recortada automaticamente · 450×450 px
-            </div>`;
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(input.files[0]);
-    }
-
-    // ==================== POPOVER EQUIPAMENTO ====================
-    function _badgePopover(status) {
-      const c = {ok:'#22c55e',proxima:'#f97316',vencida:'#ef4444','sem-data':'#6b7280'};
-      const l = {ok:'Em Dia',proxima:'Próxima',vencida:'Vencida','sem-data':'Sem Ref.'};
-      return `<span style="font-size:.7rem;padding:2px 8px;border-radius:10px;background:${c[status]||'#6b7280'};color:#fff;font-weight:700;">${l[status]||'—'}</span>`;
-    }
-
-    function mostrarPopoverEquip(equipId, evt) {
-      const equip = db.equipamentos.find(e => e.id === equipId);
-      if (!equip) return;
-      const planosEquip = _statusPlanosGlobal.filter(s => s.equip?.id === equipId);
-      const pior = planosEquip.length
-        ? [...planosEquip].sort((a,b)=>({vencida:0,proxima:1,ok:2,'sem-data':3}[a.status]??9)-({vencida:0,proxima:1,ok:2,'sem-data':3}[b.status]??9))[0].status
-        : 'sem-data';
-      const tc = equip.tipo_controle;
-      const controleVal = tc==='KM'?`${equip.km||0} km`:tc==='Horímetro'?`${equip.horas||0} h`:tc==='Data'?'Por data':'—';
-      const imgHtml = equip.imagem
-        ? `<img src="${equip.imagem}" style="width:100%;height:200px;object-fit:cover;display:block;border-bottom:1px solid #0f172a;">`
-        : `<div style="height:80px;display:flex;align-items:center;justify-content:center;background:#2d3748;border-bottom:1px solid #0f172a;"><i class="fas fa-tractor" style="font-size:2.5rem;color:#4a5568;"></i></div>`;
-      const planosHtml = planosEquip.length === 0
-        ? '<div style="color:#64748b;font-size:0.78rem;padding:4px 0;">Nenhum plano cadastrado</div>'
-        : planosEquip.map(p => `
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #2d3748;gap:8px;">
-            <span style="font-size:.76rem;color:#cbd5e1;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.plano.nome}">${p.plano.nome}</span>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;">
-              ${_badgePopover(p.status)}
-              <span style="font-size:.68rem;color:#94a3b8;">${p.proximaStr||'—'}</span>
-            </div>
-          </div>`).join('');
-      const content = `
-        ${imgHtml}
-        <div style="padding:12px 14px;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:6px;">
-            <div style="min-width:0;">
-              ${equip.codigo?`<div style="font-size:.68rem;color:#64748b;margin-bottom:1px;">Cód: ${equip.codigo}</div>`:''}
-              <div style="font-weight:700;font-size:.92rem;color:#f1f5f9;line-height:1.2;">${equip.nome}</div>
-              <div style="font-size:.73rem;color:#94a3b8;margin-top:1px;">${equip.tipo||''}${equip.setor?' · '+equip.setor:''}</div>
-            </div>
-            ${_badgePopover(pior)}
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;padding:8px;background:#0f172a;border-radius:6px;">
-            <div><div style="font-size:.62rem;color:#64748b;text-transform:uppercase;margin-bottom:2px;">Controle</div><div style="font-size:.8rem;font-weight:600;">${controleVal}</div></div>
-            <div><div style="font-size:.62rem;color:#64748b;text-transform:uppercase;margin-bottom:2px;">Placa/Ano</div><div style="font-size:.8rem;font-weight:600;">${equip.placa||'—'} ${equip.ano||''}</div></div>
-            <div><div style="font-size:.62rem;color:#64748b;text-transform:uppercase;margin-bottom:2px;">Status</div><div style="font-size:.8rem;font-weight:600;color:${equip.status==='Ativo'?'#22c55e':equip.status==='Inativo'?'#ef4444':'#f97316'}">${equip.status||'—'}</div></div>
-          </div>
-          <div style="font-size:.68rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Planos de Manutenção (${planosEquip.length})</div>
-          ${planosHtml}
-        </div>`;
-      document.getElementById('equipPopoverContent').innerHTML = content;
-      document.getElementById('equipPopover').style.display = 'block';
-      posicionarPopover(evt);
-    }
-
-    function posicionarPopover(evt) {
-      const pop = document.getElementById('equipPopover');
-      if (!pop || pop.style.display === 'none') return;
-      const x = evt.clientX + 18, y = evt.clientY - 20;
-      const maxX = window.innerWidth  - pop.offsetWidth  - 12;
-      const maxY = window.innerHeight - pop.offsetHeight - 12;
-      pop.style.left = Math.min(x, maxX) + 'px';
-      pop.style.top  = Math.max(10, Math.min(y, maxY)) + 'px';
-    }
-
-    function ocultarPopover() {
-      const pop = document.getElementById('equipPopover');
-      if (pop) pop.style.display = 'none';
-    }
-
-    // ==================== INITIALIZATION ====================
-    document.addEventListener('DOMContentLoaded', function() {
-      // Sempre exige login ao abrir/recarregar o sistema — sem restauração de sessão
-      localStorage.removeItem('currentUser');
-      document.getElementById('loginScreen').classList.remove('hidden');
-      document.getElementById('mainApp').style.display = 'none';
-      document.getElementById('homeScreen').style.display = 'none';
-      
-      atualizarDataHoje();
-      setInterval(atualizarDataHoje, 1000);
-      
-      // Esconder splash após 2.5 segundos
-      setTimeout(() => {
-        document.getElementById('splashScreen').classList.add('hidden');
-      }, 2500);
-    });
-  </script>
-
-  <!-- Rich Equip Popover -->
-  <div id="equipPopover">
-    <div id="equipPopoverContent
+t
