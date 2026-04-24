@@ -1477,7 +1477,7 @@
 
     function salvarNoFirebase() {
       if (!currentUser) return;
-      const path = `/pcm/${currentUser.id}/`;
+      const path = '/pcm/admin_default/';
       firebaseDb.ref(path + 'equipamentos').set(db.equipamentos).catch(e => console.error('Erro ao salvar equipamentos:', e));
       firebaseDb.ref(path + 'planos').set(db.planos).catch(e => console.error('Erro ao salvar planos:', e));
       firebaseDb.ref(path + 'agendamentos').set(db.agendamentos).catch(e => console.error('Erro ao salvar agendamentos:', e));
@@ -3397,7 +3397,7 @@
 
     function carregarDadosDoFirebase() {
       if (!currentUser) return;
-      const path = `/pcm/${currentUser.id}/`;
+      const path = '/pcm/admin_default/';
 
       firebaseDb.ref(path + 'equipamentos').on('value', snap => {
         db.equipamentos = toArr(snap.val());
@@ -3558,4 +3558,4 @@
 
   <!-- Rich Equip Popover -->
   <div id="equipPopover">
-    <div id="equipPopoverContent
+    <div id="equipPopoverContent        
