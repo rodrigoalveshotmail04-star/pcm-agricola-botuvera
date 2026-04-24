@@ -3433,4 +3433,129 @@
       });
     }
 
-t
+    function importExcel() {
+      alert('Funcionalidade de importação em desenvolvimento');
+    }
+
+    function exportExcel() {
+      alert('Funcionalidade de exportação em desenvolvimento');
+    }
+
+    // ==================== IMAGEM EQUIPAMENTO ====================
+    function processarImagemEquip(input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          // Crop central quadrado → 450×450 (padrão BI consistente)
+          const SIZE = 450;
+          const side = Math.min(img.width, img.height);
+          const sx   = Math.round((img.width  - side) / 2);
+          const sy   = Math.round((img.height - side) / 2);
+          const canvas = document.createElement('canvas');
+          canvas.width = SIZE; canvas.height = SIZE;
+          canvas.getContext('2d').drawImage(img, sx, sy, side, side, 0, 0, SIZE, SIZE);
+          _equipImagemPendente = canvas.toDataURL('image/jpeg', 0.82);
+          const prev = document.getElementById('equipImagemPreview');
+          if (prev) prev.innerHTML = `
+            <img src="${_equipImagemPendente}"
+              style="width:100%;height:200px;object-fit:cover;border-radius:6px;display:block;">
+            <div style="font-size:0.72rem;color:#666;text-align:center;margin-top:4px;">
+              <i class="fas fa-crop-alt me-1"></i>Recortada automaticamente · 450×450 px
+            </div>`;
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    // ==================== POPOVER EQUIPAMENTO ====================
+    function _badgePopover(status) {
+      const c = {ok:'#22c55e',proxima:'#f97316',vencida:'#ef4444','sem-data':'#6b7280'};
+      const l = {ok:'Em Dia',proxima:'Próxima',vencida:'Vencida','sem-data':'Sem Ref.'};
+      return `<span style="font-size:.7rem;padding:2px 8px;border-radius:10px;background:${c[status]||'#6b7280'};color:#fff;font-weight:700;">${l[status]||'—'}</span>`;
+    }
+
+    function mostrarPopoverEquip(equipId, evt) {
+      const equip = db.equipamentos.find(e => e.id === equipId);
+      if (!equip) return;
+      const planosEquip = _statusPlanosGlobal.filter(s => s.equip?.id === equipId);
+      const pior = planosEquip.length
+        ? [...planosEquip].sort((a,b)=>({vencida:0,proxima:1,ok:2,'sem-data':3}[a.status]??9)-({vencida:0,proxima:1,ok:2,'sem-data':3}[b.status]??9))[0].status
+        : 'sem-data';
+      const tc = equip.tipo_controle;
+      const controleVal = tc==='KM'?`${equip.km||0} km`:tc==='Horímetro'?`${equip.horas||0} h`:tc==='Data'?'Por data':'—';
+      const imgHtml = equip.imagem
+        ? `<img src="${equip.imagem}" style="width:100%;height:200px;object-fit:cover;display:block;border-bottom:1px solid #0f172a;">`
+        : `<div style="height:80px;display:flex;align-items:center;justify-content:center;background:#2d3748;border-bottom:1px solid #0f172a;"><i class="fas fa-tractor" style="font-size:2.5rem;color:#4a5568;"></i></div>`;
+      const planosHtml = planosEquip.length === 0
+        ? '<div style="color:#64748b;font-size:0.78rem;padding:4px 0;">Nenhum plano cadastrado</div>'
+        : planosEquip.map(p => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid #2d3748;gap:8px;">
+            <span style="font-size:.76rem;color:#cbd5e1;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${p.plano.nome}">${p.plano.nome}</span>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;">
+              ${_badgePopover(p.status)}
+              <span style="font-size:.68rem;color:#94a3b8;">${p.proximaStr||'—'}</span>
+            </div>
+          </div>`).join('');
+      const content = `
+        ${imgHtml}
+        <div style="padding:12px 14px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:6px;">
+            <div style="min-width:0;">
+              ${equip.codigo?`<div style="font-size:.68rem;color:#64748b;margin-bottom:1px;">Cód: ${equip.codigo}</div>`:''}
+              <div style="font-weight:700;font-size:.92rem;color:#f1f5f9;line-height:1.2;">${equip.nome}</div>
+              <div style="font-size:.73rem;color:#94a3b8;margin-top:1px;">${equip.tipo||''}${equip.setor?' · '+equip.setor:''}</div>
+            </div>
+            ${_badgePopover(pior)}
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;padding:8px;background:#0f172a;border-radius:6px;">
+            <div><div style="font-size:.62rem;color:#64748b;text-transform:uppercase;margin-bottom:2px;">Controle</div><div style="font-size:.8rem;font-weight:600;">${controleVal}</div></div>
+            <div><div style="font-size:.62rem;color:#64748b;text-transform:uppercase;margin-bottom:2px;">Placa/Ano</div><div style="font-size:.8rem;font-weight:600;">${equip.placa||'—'} ${equip.ano||''}</div></div>
+            <div><div style="font-size:.62rem;color:#64748b;text-transform:uppercase;margin-bottom:2px;">Status</div><div style="font-size:.8rem;font-weight:600;color:${equip.status==='Ativo'?'#22c55e':equip.status==='Inativo'?'#ef4444':'#f97316'}">${equip.status||'—'}</div></div>
+          </div>
+          <div style="font-size:.68rem;color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Planos de Manutenção (${planosEquip.length})</div>
+          ${planosHtml}
+        </div>`;
+      document.getElementById('equipPopoverContent').innerHTML = content;
+      document.getElementById('equipPopover').style.display = 'block';
+      posicionarPopover(evt);
+    }
+
+    function posicionarPopover(evt) {
+      const pop = document.getElementById('equipPopover');
+      if (!pop || pop.style.display === 'none') return;
+      const x = evt.clientX + 18, y = evt.clientY - 20;
+      const maxX = window.innerWidth  - pop.offsetWidth  - 12;
+      const maxY = window.innerHeight - pop.offsetHeight - 12;
+      pop.style.left = Math.min(x, maxX) + 'px';
+      pop.style.top  = Math.max(10, Math.min(y, maxY)) + 'px';
+    }
+
+    function ocultarPopover() {
+      const pop = document.getElementById('equipPopover');
+      if (pop) pop.style.display = 'none';
+    }
+
+    // ==================== INITIALIZATION ====================
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sempre exige login ao abrir/recarregar o sistema — sem restauração de sessão
+      localStorage.removeItem('currentUser');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      document.getElementById('mainApp').style.display = 'none';
+      document.getElementById('homeScreen').style.display = 'none';
+      
+      atualizarDataHoje();
+      setInterval(atualizarDataHoje, 1000);
+      
+      // Esconder splash após 2.5 segundos
+      setTimeout(() => {
+        document.getElementById('splashScreen').classList.add('hidden');
+      }, 2500);
+    });
+  </script>
+
+  <!-- Rich Equip Popover -->
+  <div id="equipPopover">
+    <div id="equipPopoverContent
