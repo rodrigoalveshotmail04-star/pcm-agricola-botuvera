@@ -342,9 +342,11 @@
 
     /* ══ SIDEBAR LAYOUT ═══════════════════════════════════════ */
     #mainApp {
-      display: grid !important;
       grid-template-columns: var(--sidebar-w) 1fr;
       min-height: 100vh;
+    }
+    #mainApp.app-visible {
+      display: grid !important;
     }
     .sidebar {
       background: var(--c-sidebar);
@@ -3435,7 +3437,4 @@
 
   <!-- Rich Equip Popover -->
   <div id="equipPopover">
-    <div id="equipPopoverContent"></div>
-  </div>
-</body>
-</html>
+    <div id="equipPopoverContent
