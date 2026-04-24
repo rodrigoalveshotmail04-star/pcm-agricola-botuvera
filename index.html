@@ -64,38 +64,79 @@
     #loginScreen {
       display: flex; width: 100%; min-height: 100vh; overflow: hidden;
     }
-    /* CENA AGRICOLA */
+    /* CENA AGRICOLA — Noite agrícola alinhada ao Design System */
     .login-scene {
       flex: 1; position: relative; overflow: hidden;
       background: linear-gradient(180deg,
-        #050d18 0%, #0c1f3a 18%, #1a3a5c 32%,
-        #7a2e0e 52%, #d4621a 62%, #f4a259 72%,
-        #ffd066 82%, #ffe899 100%);
+        #000a04 0%,
+        #001308 12%,
+        #001f0c 30%,
+        #002D10 55%,
+        #003a14 72%,
+        #004a18 85%,
+        #002a0e 100%);
     }
-    .login-sun-glow {
-      position: absolute; left: 50%; bottom: 38%;
-      transform: translateX(-50%);
-      width: 220px; height: 220px; border-radius: 50%;
-      background: radial-gradient(circle,rgba(255,220,80,.65) 0%,rgba(255,140,30,.35) 40%,transparent 70%);
-      animation: lsSunRise 3s ease-out forwards;
+    /* Lua */
+    .login-moon {
+      position: absolute; right: 18%; top: 12%;
+      width: 64px; height: 64px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%,
+        #f0f8d8 0%, #D4DF00 35%, #a8b800 70%, transparent 100%);
+      box-shadow: 0 0 40px 12px rgba(212,223,0,.18), 0 0 80px 30px rgba(212,223,0,.07);
+      animation: lsMoon 2.5s ease-out forwards; opacity:0;
     }
-    @keyframes lsSunRise {
-      from { opacity:0; transform:translateX(-50%) translateY(50px); }
-      to   { opacity:1; transform:translateX(-50%) translateY(0); }
+    @keyframes lsMoon {
+      to { opacity:1; }
     }
-    .login-cloud {
-      position: absolute; border-radius: 50px;
-      background: rgba(255,255,255,.1); filter: blur(6px);
-      animation: lsCloud linear infinite;
+    /* Halo lunar */
+    .login-moon-halo {
+      position:absolute; right: calc(18% - 32px); top: calc(12% - 32px);
+      width:128px; height:128px; border-radius:50%;
+      background: radial-gradient(circle, rgba(212,223,0,.06) 0%, transparent 70%);
+      animation: lsMoon 3s ease-out .2s forwards; opacity:0;
     }
-    .lc1{width:130px;height:32px;top:10%;left:110%;animation-duration:44s;animation-delay:-6s}
-    .lc2{width:85px;height:22px;top:20%;left:110%;animation-duration:58s;animation-delay:-20s;opacity:.6}
-    .lc3{width:170px;height:38px;top:6%;left:110%;animation-duration:70s;animation-delay:-35s;opacity:.45}
-    .lc4{width:65px;height:16px;top:28%;left:110%;animation-duration:50s;animation-delay:-12s;opacity:.55}
-    @keyframes lsCloud {
-      from { transform:translateX(0); }
-      to   { transform:translateX(calc(-110vw)); }
+    /* Estrelas */
+    .login-stars {
+      position:absolute; inset:0; pointer-events:none;
+      background-image:
+        radial-gradient(1px 1px at  7%  8%, rgba(212,223,0,.7) 0%, transparent 100%),
+        radial-gradient(1px 1px at 14% 22%, rgba(255,255,255,.5) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 23%  5%, rgba(255,255,255,.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 31% 18%, rgba(212,223,0,.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 42%  9%, rgba(255,255,255,.5) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 52% 15%, rgba(255,255,255,.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 61%  6%, rgba(212,223,0,.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 72% 20%, rgba(255,255,255,.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 82%  4%, rgba(255,255,255,.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 14%, rgba(212,223,0,.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 18% 35%, rgba(255,255,255,.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 36% 28%, rgba(212,223,0,.35) 0%, transparent 100%),
+        radial-gradient(1px 1px at 65% 32%, rgba(255,255,255,.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 78% 38%, rgba(212,223,0,.3) 0%, transparent 100%);
+      animation: lsStarsFade 3s ease-out forwards; opacity:0;
     }
+    @keyframes lsStarsFade { to { opacity:1; } }
+    /* Vagalumes */
+    .login-firefly {
+      position:absolute; border-radius:50%;
+      width:4px; height:4px;
+      background:#D4DF00;
+      box-shadow: 0 0 6px 2px rgba(212,223,0,.6);
+      animation: lsFirefly ease-in-out infinite;
+    }
+    .lff1{left:12%;bottom:42%;animation-duration:3.2s;animation-delay:0s;}
+    .lff2{left:22%;bottom:35%;animation-duration:4.1s;animation-delay:1.2s;}
+    .lff3{left:35%;bottom:48%;animation-duration:2.8s;animation-delay:0.6s;}
+    .lff4{left:48%;bottom:40%;animation-duration:3.7s;animation-delay:2s;}
+    .lff5{left:58%;bottom:44%;animation-duration:4.4s;animation-delay:0.3s;}
+    .lff6{left:70%;bottom:37%;animation-duration:3.0s;animation-delay:1.8s;}
+    @keyframes lsFirefly {
+      0%,100%{ transform:translateY(0) translateX(0); opacity:0; }
+      25%    { transform:translateY(-12px) translateX(8px); opacity:.9; }
+      50%    { transform:translateY(-6px) translateX(-6px); opacity:.5; }
+      75%    { transform:translateY(-18px) translateX(4px); opacity:.85; }
+    }
+    /* Colinas ao fundo */
     .login-hills-far {
       position:absolute; bottom:42%; left:0; width:100%; height:120px;
       animation: lsFade 2.5s ease-out forwards;
@@ -105,19 +146,20 @@
       animation: lsFade 3s ease-out .4s forwards; opacity:0;
     }
     @keyframes lsFade { to { opacity:1; } }
+    /* Campo */
     .login-wheat {
       position:absolute; bottom:0; left:0; width:100%; height:47%;
     }
     .login-wheat-bg {
       position:absolute; inset:0;
       background: linear-gradient(180deg,
-        #3d6e18 0%, #4a7e1e 18%, #5a9020 32%,
-        #6a9818 48%, #7aaa20 58%,
-        #b8961a 72%, #1a1208 100%);
+        #001f0c 0%, #002D10 15%, #003518 30%,
+        #003a14 48%, #002a0e 70%,
+        #001a08 85%, #000d04 100%);
     }
     .login-wheat-rows {
       position:absolute; bottom:0; left:0; width:200%; height:60%;
-      background-image: repeating-linear-gradient(90deg,transparent 0px,transparent 8px,rgba(0,0,0,.18) 8px,rgba(0,0,0,.18) 9px);
+      background-image: repeating-linear-gradient(90deg,transparent 0px,transparent 8px,rgba(0,0,0,.25) 8px,rgba(0,0,0,.25) 9px);
       animation: lsWheat 3.5s ease-in-out infinite alternate;
     }
     @keyframes lsWheat {
@@ -126,7 +168,14 @@
     }
     .login-tracks {
       position:absolute; bottom:0; left:0; width:100%; height:35%;
-      background: repeating-linear-gradient(92deg,transparent 0,transparent 28%,rgba(0,0,0,.12) 28%,rgba(0,0,0,.12) 32%,transparent 32%,transparent 68%,rgba(0,0,0,.12) 68%,rgba(0,0,0,.12) 72%,transparent 72%);
+      background: repeating-linear-gradient(92deg,transparent 0,transparent 28%,rgba(0,0,0,.15) 28%,rgba(0,0,0,.15) 32%,transparent 32%,transparent 68%,rgba(0,0,0,.15) 68%,rgba(0,0,0,.15) 72%,transparent 72%);
+    }
+    /* Faróis dos tratores (glow) */
+    .ls-headlight {
+      position:absolute; left:-8px; top:28%;
+      width:60px; height:14px;
+      background: radial-gradient(ellipse at left, rgba(212,223,0,.55) 0%, rgba(212,223,0,.1) 60%, transparent 100%);
+      transform: rotate(-2deg);
     }
     /* JOHN DEERE WRAP */
     .ls-jd-wrap {
@@ -155,41 +204,41 @@
       100% { right:105%; opacity:0; }
     }
     .ls-dust { position:absolute; bottom:6px; right:0; display:flex; gap:4px; }
-    .ls-dust-p { border-radius:50%; background:rgba(200,160,80,.5); animation:lsDust 1.2s ease-out infinite; }
+    .ls-dust-p { border-radius:50%; background:rgba(100,180,80,.35); animation:lsDust 1.2s ease-out infinite; }
     .ls-d1{width:13px;height:13px}
     .ls-d2{width:9px;height:9px;animation-delay:.2s}
     .ls-d3{width:6px;height:6px;animation-delay:.4s}
     .ls-d4{width:4px;height:4px;animation-delay:.6s}
     @keyframes lsDust {
-      0%   { transform:translateY(0) translateX(0); opacity:.6; }
+      0%   { transform:translateY(0) translateX(0); opacity:.5; }
       100% { transform:translateY(-22px) translateX(16px); opacity:0; }
     }
     .ls-chaff { position:absolute; top:16px; right:-8px; display:flex; flex-direction:column; gap:3px; }
-    .ls-chaff-p { width:3px; height:8px; background:rgba(255,200,50,.6); border-radius:2px; animation:lsChaff 1.6s ease-out infinite; }
+    .ls-chaff-p { width:3px; height:8px; background:rgba(212,223,0,.5); border-radius:2px; animation:lsChaff 1.6s ease-out infinite; }
     .ls-chaff-p:nth-child(2){animation-delay:.3s;height:5px}
     .ls-chaff-p:nth-child(3){animation-delay:.7s;height:11px}
     .ls-chaff-p:nth-child(4){animation-delay:1.1s;height:6px}
     @keyframes lsChaff {
-      0%  { transform:translateX(0) translateY(0) rotate(0deg); opacity:.8; }
+      0%  { transform:translateX(0) translateY(0) rotate(0deg); opacity:.7; }
       100%{ transform:translateX(28px) translateY(-32px) rotate(48deg); opacity:0; }
     }
     .ls-smoke-p { animation:lsSmoke 1.8s ease-out infinite; }
     .ls-smoke-p:nth-child(2){ animation-delay:.6s; }
     @keyframes lsSmoke {
-      0%   { transform:translateY(0) scale(1); opacity:.35; }
+      0%   { transform:translateY(0) scale(1); opacity:.25; }
       100% { transform:translateY(-16px) scale(2.2); opacity:0; }
     }
     .login-vignette {
       position:absolute; inset:0; pointer-events:none;
       background:
-        linear-gradient(to right, rgba(0,0,0,.55) 0%,transparent 35%),
-        linear-gradient(to bottom,rgba(0,0,0,.35) 0%,transparent 25%),
-        linear-gradient(to top,  rgba(0,0,0,.65) 0%,transparent 30%);
+        linear-gradient(to right, rgba(0,10,2,.7) 0%,transparent 40%),
+        linear-gradient(to bottom,rgba(0,10,2,.5) 0%,transparent 30%),
+        linear-gradient(to top,  rgba(0,10,2,.8) 0%,transparent 35%);
     }
     .login-scene-badge {
       position:absolute; bottom:14px; left:16px;
       font-family:'Syne',sans-serif; font-size:8px; font-weight:700;
-      letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,255,255,.3);
+      letter-spacing:2.5px; text-transform:uppercase; color:rgba(212,223,0,.25);
     }
     /* LOGIN PANEL */
     .login-panel {
@@ -641,166 +690,114 @@
 
     <!-- CENA AGRICOLA ANIMADA -->
     <div class="login-scene">
-      <div class="login-sun-glow"></div>
-
-      <!-- Nuvens -->
-      <div class="login-cloud lc1"></div>
-      <div class="login-cloud lc2"></div>
-      <div class="login-cloud lc3"></div>
-      <div class="login-cloud lc4"></div>
-
-      <!-- Colinas distantes -->
-      <svg class="login-hills-far" viewBox="0 0 900 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 120 C90 35,160 15,230 48 C300 80,370 8,460 28 C540 48,610 4,690 22 C760 40,830 58,900 32 L900 120 Z" fill="#0a2218"/>
-      </svg>
-
-      <!-- Campo de trigo -->
-      <div class="login-wheat">
-        <div class="login-wheat-bg"></div>
-        <div class="login-wheat-rows"></div>
-        <div class="login-tracks"></div>
-      </div>
-
-      <!-- Colinas medias -->
-      <svg class="login-hills-mid" viewBox="0 0 900 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 90 C70 28,140 8,210 32 C280 58,350 18,440 38 C510 54,580 12,660 28 C730 42,810 22,900 44 L900 90 Z" fill="#163d18"/>
-      </svg>
-
-      <!-- JOHN DEERE X9 1000 (segundo plano) -->
-      <div class="ls-jd-wrap">
-        <div class="ls-chaff">
-          <div class="ls-chaff-p"></div><div class="ls-chaff-p"></div>
-          <div class="ls-chaff-p"></div><div class="ls-chaff-p"></div>
-        </div>
-        <svg width="300" height="108" viewBox="0 0 300 108" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="168" cy="106" rx="118" ry="5" fill="rgba(0,0,0,.22)"/>
-          <!-- Header -->
-          <rect x="2" y="67" width="118" height="19" fill="#c8a800" rx="2"/>
-          <rect x="0" y="66" width="8" height="24" fill="#b09000" rx="1"/>
-          <line x1="18" y1="67" x2="18" y2="86" stroke="#a08000" stroke-width="1.5"/>
-          <line x1="36" y1="67" x2="36" y2="86" stroke="#a08000" stroke-width="1.5"/>
-          <line x1="54" y1="67" x2="54" y2="86" stroke="#a08000" stroke-width="1.5"/>
-          <line x1="72" y1="67" x2="72" y2="86" stroke="#a08000" stroke-width="1.5"/>
-          <line x1="90" y1="67" x2="90" y2="86" stroke="#a08000" stroke-width="1.5"/>
-          <line x1="108" y1="67" x2="108" y2="86" stroke="#a08000" stroke-width="1.5"/>
-          <!-- Feed house -->
-          <rect x="116" y="58" width="26" height="32" fill="#d4b000" rx="2"/>
-          <!-- Main body -->
-          <rect x="122" y="30" width="126" height="58" fill="#e8c000" rx="4"/>
-          <rect x="122" y="58" width="126" height="8" fill="#1a1a1a"/>
-          <!-- Grain tank -->
-          <rect x="212" y="8" width="72" height="72" fill="#e8c000" rx="3"/>
-          <path d="M212 8 Q248 -4 284 8" fill="#c8a000"/>
-          <!-- Unloading auger -->
-          <rect x="272" y="-16" width="7" height="40" fill="#b09000" rx="3" transform="rotate(25 276 22)"/>
-          <circle cx="284" cy="-16" r="5" fill="#987800" transform="rotate(25 276 22)"/>
-          <!-- Cab -->
-          <rect x="128" y="14" width="68" height="48" fill="#e0b800" rx="3"/>
-          <rect x="131" y="17" width="62" height="36" fill="rgba(155,225,255,.45)" rx="2"/>
-          <rect x="128" y="14" width="68" height="5" fill="#1a1a1a" rx="2"/>
-          <!-- Engine hood -->
-          <rect x="122" y="32" width="10" height="32" fill="#c8a800"/>
-          <!-- Front wheel -->
-          <circle cx="138" cy="93" r="24" fill="#111"/>
-          <circle cx="138" cy="93" r="17" fill="#222"/>
-          <circle cx="138" cy="93" r="6" fill="#333" stroke="#555" stroke-width="1.5"/>
-          <circle cx="138" cy="93" r="21" fill="none" stroke="#2a2a2a" stroke-width="2.5" stroke-dasharray="5 9"/>
-          <!-- Rear wheel -->
-          <circle cx="258" cy="95" r="17" fill="#111"/>
-          <circle cx="258" cy="95" r="11" fill="#222"/>
-          <circle cx="258" cy="95" r="4" fill="#333"/>
-          <!-- John Deere text -->
-          <text x="140" y="53" fill="#1a1a1a" font-family="Arial,sans-serif" font-size="8" font-weight="bold" letter-spacing=".5">JOHN DEERE</text>
-          <rect x="230" y="40" width="30" height="14" fill="#1a1a1a" rx="2"/>
-          <text x="234" y="50" fill="#e8c000" font-family="Arial,sans-serif" font-size="8" font-weight="bold">X9</text>
-          <!-- Lights -->
-          <circle cx="5" cy="64" r="4" fill="#fffaaa" opacity=".9"/>
-          <circle cx="5" cy="76" r="3" fill="#fffaaa" opacity=".7"/>
-          <circle cx="5" cy="64" r="9" fill="rgba(255,250,150,.12)"/>
+        <!-- Estrelas -->
+        <div class="login-stars"></div>
+        <!-- Lua e halo -->
+        <div class="login-moon-halo"></div>
+        <div class="login-moon"></div>
+        <!-- Vagalumes -->
+        <div class="login-firefly lff1"></div>
+        <div class="login-firefly lff2"></div>
+        <div class="login-firefly lff3"></div>
+        <div class="login-firefly lff4"></div>
+        <div class="login-firefly lff5"></div>
+        <div class="login-firefly lff6"></div>
+        <!-- Colinas -->
+        <svg class="login-hills-far" viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,80 C180,20 360,100 540,60 C720,20 900,90 1080,50 C1260,10 1380,70 1440,55 L1440,120 L0,120 Z" fill="#002510" opacity=".9"/>
         </svg>
-      </div>
-
-      <!-- FENDT 1000 VARIO (primeiro plano) -->
-      <div class="ls-fendt-wrap">
-        <div class="ls-dust">
-          <div class="ls-dust-p ls-d1"></div><div class="ls-dust-p ls-d2"></div>
-          <div class="ls-dust-p ls-d3"></div><div class="ls-dust-p ls-d4"></div>
-        </div>
-        <svg width="258" height="118" viewBox="0 0 258 118" xmlns="http://www.w3.org/2000/svg">
-          <ellipse cx="116" cy="115" rx="102" ry="5" fill="rgba(0,0,0,.28)"/>
-          <!-- Chassis -->
-          <rect x="30" y="70" width="175" height="23" fill="#1e4010" rx="3"/>
-          <!-- Hood long -->
-          <path d="M108 40 L218 40 L228 53 L222 76 L108 76 Z" fill="#3a7d1e"/>
-          <path d="M112 38 L214 38 L222 43 L216 46 L108 46 Z" fill="#477e24"/>
-          <!-- Hood vents -->
-          <line x1="138" y1="46" x2="138" y2="74" stroke="rgba(0,0,0,.28)" stroke-width="2"/>
-          <line x1="154" y1="46" x2="154" y2="74" stroke="rgba(0,0,0,.28)" stroke-width="2"/>
-          <line x1="170" y1="46" x2="170" y2="74" stroke="rgba(0,0,0,.28)" stroke-width="2"/>
-          <line x1="186" y1="46" x2="186" y2="74" stroke="rgba(0,0,0,.28)" stroke-width="2"/>
-          <!-- FENDT label -->
-          <text x="146" y="67" fill="#D4DF00" font-family="Arial,sans-serif" font-size="10" font-weight="bold" letter-spacing="1">FENDT</text>
-          <!-- Cab body -->
-          <rect x="74" y="24" width="54" height="55" fill="#2d6b18" rx="3"/>
-          <!-- Rear pillar -->
-          <rect x="70" y="24" width="8" height="55" fill="#1e4010" rx="2"/>
-          <!-- Front glass -->
-          <rect x="122" y="27" width="5" height="42" fill="rgba(155,215,255,.42)" rx="1"/>
-          <!-- Side glass -->
-          <rect x="77" y="28" width="44" height="38" fill="rgba(155,215,255,.38)" rx="2"/>
-          <!-- Operator -->
-          <circle cx="98" cy="37" r="5" fill="rgba(0,0,0,.38)"/>
-          <rect x="93" y="42" width="10" height="12" fill="rgba(0,0,0,.28)" rx="2"/>
-          <!-- Cab roof -->
-          <path d="M69 24 L128 24 L124 17 L74 17 Z" fill="#1e4010"/>
-          <!-- Light bar roof -->
-          <rect x="76" y="13" width="46" height="5" fill="#2d6b18" rx="2"/>
-          <rect x="80" y="14" width="8" height="3" fill="#fffaaa" rx="1" opacity=".65"/>
-          <rect x="92" y="14" width="8" height="3" fill="#fffaaa" rx="1" opacity=".65"/>
-          <rect x="104" y="14" width="8" height="3" fill="#fffaaa" rx="1" opacity=".65"/>
-          <!-- Exhaust -->
-          <rect x="118" y="7" width="6" height="22" fill="#667" rx="3"/>
-          <ellipse cx="121" cy="7" rx="4" ry="2" fill="#556"/>
-          <circle cx="121" cy="3" r="5" fill="rgba(140,140,140,.28)" class="ls-smoke-p"/>
-          <circle cx="123" cy="-3" r="3.5" fill="rgba(140,140,140,.18)" class="ls-smoke-p"/>
-          <!-- Rear wheel LARGE -->
-          <circle cx="64" cy="94" r="43" fill="#111"/>
-          <circle cx="64" cy="94" r="36" fill="#1a1a1a"/>
-          <circle cx="64" cy="94" r="14" fill="#2a2a2a" stroke="#3a3a3a" stroke-width="2"/>
-          <circle cx="64" cy="81" r="3" fill="#3a3a3a"/>
-          <circle cx="64" cy="107" r="3" fill="#3a3a3a"/>
-          <circle cx="51" cy="94" r="3" fill="#3a3a3a"/>
-          <circle cx="77" cy="94" r="3" fill="#3a3a3a"/>
-          <circle cx="64" cy="94" r="40" fill="none" stroke="#222" stroke-width="3" stroke-dasharray="7 11"/>
-          <!-- Rear fender -->
-          <path d="M30 55 Q44 42 70 50 L77 68 L30 76 Z" fill="#2d6b18"/>
-          <!-- Front weight -->
-          <rect x="210" y="66" width="24" height="14" fill="#1a1a1a" rx="2"/>
-          <rect x="212" y="62" width="20" height="8" fill="#1e4010" rx="2"/>
-          <!-- Front wheel -->
-          <circle cx="204" cy="97" r="23" fill="#111"/>
-          <circle cx="204" cy="97" r="17" fill="#1a1a1a"/>
-          <circle cx="204" cy="97" r="6" fill="#2a2a2a" stroke="#3a3a3a" stroke-width="1.5"/>
-          <!-- Front fender -->
-          <path d="M184 72 Q196 66 222 72 L220 84 L185 84 Z" fill="#3a7d1e"/>
-          <!-- Headlights -->
-          <circle cx="230" cy="67" r="5" fill="#fffaaa" opacity=".95"/>
-          <circle cx="230" cy="79" r="4" fill="#fffaaa" opacity=".75"/>
-          <path d="M235 65 L258 57 L258 73 L235 71 Z" fill="rgba(255,250,170,.07)"/>
-          <!-- Steps -->
-          <rect x="128" y="78" width="12" height="4" fill="#1e4010" rx="1"/>
-          <rect x="128" y="83" width="12" height="4" fill="#1e4010" rx="1"/>
-          <!-- 3pt linkage rear -->
-          <line x1="30" y1="88" x2="10" y2="102" stroke="#1e4010" stroke-width="4" stroke-linecap="round"/>
-          <line x1="30" y1="86" x2="12" y2="94" stroke="#1e4010" stroke-width="3" stroke-linecap="round"/>
+        <svg class="login-hills-mid" viewBox="0 0 1440 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,50 C200,10 400,70 600,40 C800,10 1000,65 1200,35 C1320,18 1400,50 1440,42 L1440,90 L0,90 Z" fill="#001f0c" opacity=".95"/>
         </svg>
+        <!-- Campo de trigo -->
+        <div class="login-wheat">
+          <div class="login-wheat-bg"></div>
+          <div class="login-wheat-rows"></div>
+          <div class="login-tracks"></div>
+        </div>
+        <!-- John Deere X9 -->
+        <div class="ls-jd-wrap">
+          <div class="ls-headlight"></div>
+          <svg width="320" height="130" viewBox="0 0 320 130" xmlns="http://www.w3.org/2000/svg">
+            <!-- corpo colheitadeira -->
+            <rect x="20" y="30" width="200" height="70" rx="6" fill="#367C2B"/>
+            <rect x="20" y="30" width="200" height="70" rx="6" fill="url(#jdBody)"/>
+            <defs>
+              <linearGradient id="jdBody" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(255,255,255,.15)"/>
+                <stop offset="100%" stop-color="rgba(0,0,0,.25)"/>
+              </linearGradient>
+            </defs>
+            <!-- cabine -->
+            <rect x="140" y="10" width="70" height="55" rx="4" fill="#2a6522"/>
+            <rect x="145" y="14" width="60" height="42" rx="3" fill="rgba(180,230,255,.18)"/>
+            <!-- JOHN DEERE lettering -->
+            <rect x="30" y="50" width="100" height="16" rx="2" fill="#FFDE00"/>
+            <text x="35" y="63" font-family="Arial" font-size="10" font-weight="bold" fill="#333">JOHN DEERE</text>
+            <!-- X9 badge -->
+            <rect x="140" y="50" width="30" height="16" rx="2" fill="#FFDE00"/>
+            <text x="144" y="63" font-family="Arial" font-size="10" font-weight="bold" fill="#333">X9</text>
+            <!-- plataforma colheita -->
+            <rect x="0" y="70" width="25" height="10" rx="2" fill="#1a4a14"/>
+            <rect x="0" y="75" width="230" height="8" rx="2" fill="#1a4a14"/>
+            <!-- rodas -->
+            <circle cx="60" cy="108" r="20" fill="#1a1a1a"/>
+            <circle cx="60" cy="108" r="13" fill="#2a2a2a"/>
+            <circle cx="60" cy="108" r="5" fill="#888"/>
+            <circle cx="200" cy="108" r="16" fill="#1a1a1a"/>
+            <circle cx="200" cy="108" r="10" fill="#2a2a2a"/>
+            <circle cx="200" cy="108" r="4" fill="#888"/>
+            <!-- faróis -->
+            <circle cx="22" cy="40" r="5" fill="#D4DF00" opacity=".9"/>
+            <circle cx="22" cy="40" r="5" fill="#fff" opacity=".6"/>
+          </svg>
+          <div class="ls-chaff">
+            <div class="ls-chaff-p"></div><div class="ls-chaff-p"></div>
+            <div class="ls-chaff-p"></div><div class="ls-chaff-p"></div>
+          </div>
+        </div>
+        <!-- Fendt -->
+        <div class="ls-fendt-wrap">
+          <svg width="220" height="100" viewBox="0 0 220 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- corpo trator -->
+            <rect x="30" y="30" width="140" height="50" rx="6" fill="#3d7a2e"/>
+            <rect x="30" y="30" width="140" height="50" rx="6" fill="url(#fBody)"/>
+            <defs>
+              <linearGradient id="fBody" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(255,255,255,.12)"/>
+                <stop offset="100%" stop-color="rgba(0,0,0,.2)"/>
+              </linearGradient>
+            </defs>
+            <!-- cabine -->
+            <rect x="100" y="10" width="60" height="50" rx="4" fill="#2e6020"/>
+            <rect x="104" y="14" width="52" height="38" rx="3" fill="rgba(180,230,255,.15)"/>
+            <!-- FENDT badge -->
+            <rect x="38" y="44" width="52" height="14" rx="2" fill="#D4DF00"/>
+            <text x="42" y="55" font-family="Arial" font-size="9" font-weight="bold" fill="#1a1a1a">FENDT</text>
+            <!-- 1000 Vario -->
+            <rect x="96" y="44" width="40" height="14" rx="2" fill="rgba(212,223,0,.3)"/>
+            <text x="100" y="55" font-family="Arial" font-size="8" fill="#D4DF00">1000V</text>
+            <!-- rodas grandes -->
+            <circle cx="170" cy="82" r="18" fill="#1a1a1a"/>
+            <circle cx="170" cy="82" r="11" fill="#2a2a2a"/>
+            <circle cx="170" cy="82" r="4" fill="#888"/>
+            <!-- rodas dianteiras -->
+            <circle cx="50" cy="82" r="12" fill="#1a1a1a"/>
+            <circle cx="50" cy="82" r="7" fill="#2a2a2a"/>
+            <circle cx="50" cy="82" r="3" fill="#888"/>
+            <!-- faróis -->
+            <circle cx="32" cy="38" r="4" fill="#D4DF00" opacity=".85"/>
+            <circle cx="32" cy="38" r="4" fill="#fff" opacity=".5"/>
+          </svg>
+          <div class="ls-dust">
+            <div class="ls-dust-p ls-d1"></div><div class="ls-dust-p ls-d2"></div>
+            <div class="ls-dust-p ls-d3"></div><div class="ls-dust-p ls-d4"></div>
+          </div>
+        </div>
+        <!-- Vinheta e badge -->
+        <div class="login-vignette"></div>
+        <div class="login-scene-badge">FENDT 1000 VARIO · JOHN DEERE X9 1000</div>
       </div>
-
-      <!-- Linha horizonte -->
-      <div style="position:absolute;bottom:38%;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,180,50,.18),transparent)"></div>
-
-      <div class="login-vignette"></div>
-      <div class="login-scene-badge">Fendt 1000 Vario &nbsp;·&nbsp; John Deere X9 1000</div>
     </div>
 
     <!-- PAINEL DE LOGIN -->
