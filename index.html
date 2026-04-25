@@ -1097,17 +1097,6 @@
           
           <label class="form-label">Observações</label>
           <textarea class="form-control" id="equipObs"></textarea>
-
-            style="background:#f0f0f0;border:2px dashed #ccc;border-radius:8px;
-                   width:100%;height:200px;display:flex;align-items:center;
-                   justify-content:center;margin-bottom:8px;overflow:hidden;position:relative;">
-            <div style="text-align:center;color:#aaa;">
-              <i class="fas fa-camera" style="font-size:2rem;display:block;margin-bottom:6px;"></i>
-              <span style="font-size:0.8rem;">Nenhuma imagem selecionada</span>
-            </div>
-          </div>
-          <input type="file" class="form-control" id="equipImagemFile" accept="image/*" onchange="processarImagemEquip(this)" />
-          <small class="text-muted"><i class="fas fa-magic me-1"></i>A imagem será recortada automaticamente em formato quadrado 450×450 px para exibição uniforme.</small>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -2230,6 +2219,7 @@
       document.getElementById('subServ').style.display  = qual === 'serv'  ? '' : 'none';
       document.getElementById('subTabAgend').style.cssText = qual==='agend'?'background:#367C2B;color:#fff;font-weight:700;':'';
       document.getElementById('subTabServ').style.cssText  = qual==='serv' ?'background:#367C2B;color:#fff;font-weight:700;':'';
+      if (qual === 'serv') renderServicos();
     }
 
     function novoServico() {
@@ -2935,15 +2925,19 @@
         return;
       }
 
-      // Agrupar por tipo_controle
+      // Agrupar por tipo_controle, depois por setor
       const grupos = {};
       equipAtivos.forEach(e => {
-        const tc = e.tipo_controle || 'Outro';
+        const tc = e.tipo_controle || 'Sem Controle Definido';
         if (!grupos[tc]) grupos[tc] = [];
         grupos[tc].push(e);
       });
 
-      Object.entries(grupos).sort().forEach(([tipo, equips]) => {
+      // Ordem de exibição: KM, Horímetro, Data, Sem Controle
+      const ordemTipos = { 'KM': 0, 'Horímetro': 1, 'Data': 2, 'Sem Controle Definido': 3 };
+      const tiposOrdenados = Object.entries(grupos).sort(([a],[b]) => (ordemTipos[a]??9) - (ordemTipos[b]??9));
+
+      tiposOrdenados.forEach(([tipo, equips]) => {
         const grupoDiv = document.createElement('div');
         grupoDiv.className = 'mb-4';
         grupoDiv.innerHTML = `<div style="background:var(--verde-principal,#006020);color:#fff;padding:7px 14px;border-radius:6px 6px 0 0;font-weight:700;font-size:0.88rem;margin-bottom:0;">
