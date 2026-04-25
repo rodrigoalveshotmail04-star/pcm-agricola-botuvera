@@ -971,15 +971,15 @@
       <!-- LEITURAS -->
       <div id="leituras" class="content">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <div class="d-flex justify-content-between align-items-center">
-            <h2 style="color: var(--verde-principal); border-left: 5px solid #D4DF00; padding-left: 12px;">Controle</h2>
+          <h2 style="color: var(--verde-principal); border-left: 5px solid #D4DF00; padding-left: 12px;">Controle</h2>
+          <div class="d-flex gap-2">
             <button class="btn btn-sm" style="background:#D4DF00;color:#002D10;font-weight:700;border:none;" onclick="abrirRelatorioControle()">
               <i class="fas fa-print me-1"></i>Relatório Diário
             </button>
+            <button class="btn btn-primary" style="background: var(--verde-principal) !important; color: var(--branco) !important; font-weight: 700; border: none;" onclick="novaLeitura()">
+              <i class="fas fa-plus me-2"></i>Nova Leitura
+            </button>
           </div>
-          <button class="btn btn-primary" style="background: var(--verde-principal) !important; color: var(--branco) !important; font-weight: 700; border: none;" onclick="novaLeitura()">
-            <i class="fas fa-plus me-2"></i>Nova Leitura
-          </button>
         </div>
         <!-- Sub-tabs Controle -->
         <div class="d-flex gap-2 mb-3 border-bottom pb-2">
@@ -2246,6 +2246,26 @@
       new bootstrap.Modal(document.getElementById('modalServico')).show();
     }
 
+    function filtrarPlanosAgendamento(valorPlanoAtual) {
+      const equipId = document.getElementById('agendEquipamento').value;
+      const sel = document.getElementById('agendPlano');
+      if (!sel) return;
+      const equip = db.equipamentos.find(e => e.id === equipId);
+      const planosVisiveis = db.planos.filter(p => {
+        if (!equipId) return true;
+        const codigos = toArr(p.equipamentos_codigos || []);
+        if (codigos.length > 0) return equip && codigos.includes(equip.codigo);
+        return p.equipamento_id === equipId;
+      });
+      sel.innerHTML = '<option value="">Selecione um plano</option>';
+      planosVisiveis.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id; opt.textContent = p.nome;
+        sel.appendChild(opt);
+      });
+      if (valorPlanoAtual) sel.value = valorPlanoAtual;
+    }
+
     function filtrarPlanosServico() {
       const equipId = document.getElementById('serviEquipamento').value;
       const sel = document.getElementById('serviPlano');
@@ -2413,6 +2433,70 @@
     }
 
     // ==================== EQUIPAMENTOS ====================
+    function renderEquipamentos() {
+      const container = document.getElementById('containerEquipamentos');
+      if (!container) return;
+      const q = (document.getElementById('equipPesquisa')?.value || '').trim().toLowerCase();
+      const statusOrder = { 'Ativo': 0, 'Manutenção': 1, 'Inativo': 2 };
+      let lista = [...db.equipamentos].sort((a, b) => {
+        const sa = statusOrder[a.status] ?? 9, sb = statusOrder[b.status] ?? 9;
+        if (sa !== sb) return sa - sb;
+        return (a.nome || '').localeCompare(b.nome || '');
+      });
+      if (q) {
+        lista = lista.filter(e =>
+          (e.codigo || '').toLowerCase().includes(q) ||
+          (e.nome || '').toLowerCase().includes(q) ||
+          (e.tipo || '').toLowerCase().includes(q) ||
+          (e.setor || '').toLowerCase().includes(q) ||
+          (e.placa || '').toLowerCase().includes(q)
+        );
+      }
+      if (lista.length === 0) {
+        container.innerHTML = '<p class="text-muted">Nenhum equipamento encontrado</p>';
+        return;
+      }
+      const canEdit = currentUser.perfil !== 'visualizador';
+      const statusCor = { 'Ativo': '#22c55e', 'Inativo': '#ef4444', 'Manutenção': '#f97316' };
+      container.innerHTML = lista.map(e => {
+        const cor = statusCor[e.status] || '#6b7280';
+        const tc = e.tipo_controle;
+        let medidor = '';
+        if (tc === 'KM') medidor = `<span style="color:#888;">KM:</span> <strong>${e.km || 0}</strong>${e.dataKm ? ` <small style="color:#aaa;">(${new Date(e.dataKm+'T00:00:00').toLocaleDateString('pt-BR')})</small>` : ''}`;
+        else if (tc === 'Horímetro') medidor = `<span style="color:#888;">Horas:</span> <strong>${e.horas || 0}</strong>${e.dataHoras ? ` <small style="color:#aaa;">(${new Date(e.dataHoras+'T00:00:00').toLocaleDateString('pt-BR')})</small>` : ''}`;
+        return `<div class="card-equip" style="border-left:4px solid ${cor};" onmouseenter="mostrarPopoverEquip('${e.id}',event)" onmouseleave="ocultarPopover()">
+          <div class="d-flex justify-content-between align-items-start">
+            <div style="flex:1;">
+              ${e.codigo ? `<div style="font-size:0.75rem;color:#888;margin-bottom:2px;">Cód. Bem: <strong>${e.codigo}</strong></div>` : ''}
+              <h5 class="card-title" style="margin-bottom:6px;">${e.nome}</h5>
+              <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:0.87rem;">
+                ${e.tipo ? `<span><span style="color:#888;">Tipo:</span> <strong>${e.tipo}</strong></span>` : ''}
+                ${e.setor ? `<span><span style="color:#888;">Setor:</span> <strong>${e.setor}</strong></span>` : ''}
+                ${e.placa ? `<span><span style="color:#888;">Placa:</span> <strong>${e.placa}</strong></span>` : ''}
+                ${e.ano ? `<span><span style="color:#888;">Ano:</span> <strong>${e.ano}</strong></span>` : ''}
+                ${medidor ? `<span>${medidor}</span>` : ''}
+                <span><span style="color:#888;">Status:</span> <strong style="color:${cor};">${e.status || '—'}</strong></span>
+              </div>
+            </div>
+            <div class="d-flex gap-2 ms-2">
+              ${canEdit ? `<button class="btn btn-sm btn-primary" onclick="editarEquipamento('${e.id}')"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-sm btn-danger" onclick="deletarEquipamento('${e.id}')"><i class="fas fa-trash"></i></button>` : ''}
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    function deletarEquipamento(id) {
+      if (currentUser.perfil === 'visualizador') { alert('Sem permissão'); return; }
+      if (confirm('Deseja realmente deletar este equipamento?')) {
+        db.equipamentos = db.equipamentos.filter(e => e.id !== id);
+        salvarDb();
+        renderEquipamentos();
+        atualizarDashboard();
+      }
+    }
+
     function novoEquipamento() {
       if (currentUser.perfil === 'visualizador') {
         alert('Você não tem permissão para adicionar equipamentos');
@@ -2490,6 +2574,17 @@
       document.getElementById('equipDataHoras').value = equip.dataHoras;
       document.getElementById('equipObs').value = equip.obs || '';
 
+      new bootstrap.Modal(document.getElementById('modalEquipamento')).show();
+    }
+
+    function novoAgendamento() {
+      if (currentUser.perfil === 'visualizador') { alert('Sem permissão'); return; }
+      document.getElementById('agendId').value = '';
+      document.getElementById('agendData').value = new Date().toISOString().split('T')[0];
+      document.getElementById('agendResponsavel').value = '';
+      document.getElementById('agendStatus').value = 'Agendado';
+      document.getElementById('agOrdemServico').value = '';
+      document.getElementById('agendObs').value = '';
       preencherSelectEquipamentos('agendEquipamento');
       filtrarPlanosAgendamento();
       new bootstrap.Modal(document.getElementById('modalAgendamento')).show();
@@ -2906,10 +3001,11 @@
         card.innerHTML = `
           <div class="d-flex justify-content-between align-items-start">
             <div style="flex: 1;">
+              ${equip?.codigo ? `<div style="font-size:0.75rem;color:#888;margin-bottom:2px;">Cód. Bem: <strong>${equip.codigo}</strong></div>` : ''}
               <h5 class="card-title">${equip ? equip.nome : 'Equipamento desconhecido'}</h5>
-              <div class="card-meta">Data: <strong>${new Date(lei.data).toLocaleDateString('pt-BR')}</strong></div>
-              <div class="card-meta">KM: <strong>${lei.km || '-'}</strong></div>
-              <div class="card-meta">Horas: <strong>${lei.horas || '-'}</strong></div>
+              <div class="card-meta">Data: <strong>${lei.data ? new Date(lei.data+'T00:00:00').toLocaleDateString('pt-BR') : '—'}</strong></div>
+              ${lei.km && lei.km != 0 ? `<div class="card-meta">KM: <strong>${lei.km}</strong></div>` : ''}
+              ${lei.horas && lei.horas != 0 ? `<div class="card-meta">Horas: <strong>${lei.horas}</strong></div>` : ''}
               <div class="card-meta">Obs: <strong>${lei.obs || '-'}</strong></div>
             </div>
             <div class="d-flex gap-2">
@@ -3006,6 +3102,14 @@
       
       firebaseDb.ref('/users').once('value').then(snap => {
         const usuarios = snap.val() || {};
+        // Incluir o admin_default (rodrigo) se não estiver na lista do Firebase
+        if (!usuarios['admin_default']) {
+          usuarios['admin_default'] = {
+            id: 'admin_default', nome: 'Rodrigo Admin',
+            login: 'rodrigo', perfil: 'admin', ativo: true,
+            email: 'rodrigoalveshotmail07@gmail.com'
+          };
+        }
         container.innerHTML = '';
         
         if (Object.keys(usuarios).length === 0) {
@@ -3278,7 +3382,27 @@
         renderLeituras();
       });
       firebaseDb.ref(path + 'servicos').on('value', snap => {
-        db.servicos = toArr(snap.val());
+        const firebaseServicos = toArr(snap.val());
+        // Migração: se Firebase não tem serviços, verificar localStorage
+        if (firebaseServicos.length === 0) {
+          try {
+            const localData = JSON.parse(localStorage.getItem('pcm_db') || '{}');
+            const localServicos = toArr(localData.servicos || []);
+            if (localServicos.length > 0) {
+              db.servicos = localServicos;
+              // Migrar para Firebase automaticamente
+              firebaseDb.ref(path + 'servicos').set(localServicos)
+                .then(() => console.log('[Migração] ' + localServicos.length + ' serviços migrados para Firebase'))
+                .catch(e => console.error('[Migração] Erro:', e));
+            } else {
+              db.servicos = [];
+            }
+          } catch(e) {
+            db.servicos = [];
+          }
+        } else {
+          db.servicos = firebaseServicos;
+        }
         if (typeof renderServicos === 'function') renderServicos();
       });
     }
